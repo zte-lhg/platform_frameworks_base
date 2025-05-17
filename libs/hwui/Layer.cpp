@@ -133,6 +133,7 @@ void Layer::draw(SkCanvas* canvas) {
         if (getForceFilter() || shouldFilterRect(totalMatrix, imageRect, imageRect)) {
             sampling = SkSamplingOptions(SkFilterMode::kLinear);
         }
+        // layer canvas draw into a SkImage
         canvas->drawImage(layerImage.get(), 0, 0, sampling, &paint);
         // restore the original matrix
         if (nonIdentityMatrix) {
