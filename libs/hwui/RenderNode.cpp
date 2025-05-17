@@ -623,12 +623,14 @@ static void format(StringBuffer& buffer, const std::string_view& format, T... ar
     }
 }
 
+// markDrawStart 开始绘制
 void RenderNode::markDrawStart(SkCanvas& canvas) {
     StringBuffer buffer;
     format(buffer, "RenderNode(id=%" PRId64 ", name='%s')", uniqueId(), getName());
     canvas.drawAnnotation(SkRect::MakeWH(getWidth(), getHeight()), buffer.data(), nullptr);
 }
 
+// markDrawEnd 结束绘制
 void RenderNode::markDrawEnd(SkCanvas& canvas) {
     StringBuffer buffer;
     format(buffer, "/RenderNode(id=%" PRId64 ", name='%s')", uniqueId(), getName());
