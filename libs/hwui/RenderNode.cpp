@@ -131,7 +131,7 @@ int RenderNode::getAllocatedSize() {
     return size;
 }
 
-
+// prepareTree
 void RenderNode::prepareTree(TreeInfo& info) {
     ATRACE_CALL();
     LOG_ALWAYS_FATAL_IF(!info.damageAccumulator, "DamageAccumulator missing");
@@ -389,6 +389,7 @@ std::optional<RenderNode::SnapshotResult> RenderNode::updateSnapshotIfRequired(
     return mSnapshotResult;
 }
 
+// syncDisplayList
 void RenderNode::syncDisplayList(TreeObserver& observer, TreeInfo* info) {
     // Make sure we inc first so that we don't fluctuate between 0 and 1,
     // which would thrash the layer cache
