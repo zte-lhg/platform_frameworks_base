@@ -51,6 +51,7 @@ void ProfileDataContainer::rotateStorage() {
     mData->reset();
 }
 
+// switchStorageToAshmem 内存管理方式
 void ProfileDataContainer::switchStorageToAshmem(int ashmemfd) {
     std::lock_guard lock(mJankDataMutex);
     int regionSize = ashmem_get_size_region(ashmemfd);
