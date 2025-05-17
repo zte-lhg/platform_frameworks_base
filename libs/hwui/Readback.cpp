@@ -375,7 +375,7 @@ bool Readback::copyLayerInto(Layer* layer, const SkRect* srcRect, const SkRect* 
         ALOGW("Unable to draw content from GPU into the provided bitmap");
         return false;
     }
-
+    // tmpSurface readPixels bitmap
     if (!tmpSurface->readPixels(*bitmap, 0, 0)) {
         // if we fail to readback from the GPU directly (e.g. 565) then we attempt to read into
         // 8888 and then convert that into the destination format before giving up.
