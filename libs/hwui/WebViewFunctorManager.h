@@ -93,21 +93,21 @@ private:
     void reparentSurfaceControl(ASurfaceControl* parent);
 
 private:
-    WebViewFunctorCallbacks mCallbacks;
+    WebViewFunctorCallbacks mCallbacks;   // webviewFunctorCallback 回调函数
     void* const mData;
     int mFunctor;
     RenderMode mMode;
     bool mHasContext = false;
     bool mCreatedHandle = false;
     int32_t mParentSurfaceControlGenerationId = 0;
-    ASurfaceControl* mSurfaceControl = nullptr;
+    ASurfaceControl* mSurfaceControl = nullptr;   // 包含有一个 mSurfaceContril
     std::vector<pid_t> mRenderingThreads;
 };
 
 class WebViewFunctorManager {
 public:
     static WebViewFunctorManager& instance();
-
+    // createFunctor 包含有一个 callbacks 及 FunctorNode renderNode 构造函数参数
     int createFunctor(void* data, const WebViewFunctorCallbacks& callbacks, RenderMode functorMode);
     void releaseFunctor(int functor);
     void onContextDestroyed();
