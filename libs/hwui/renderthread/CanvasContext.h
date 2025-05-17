@@ -171,8 +171,8 @@ public:
 
     void setName(const std::string&& name);
 
-    void addRenderNode(RenderNode* node, bool placeFront);
-    void removeRenderNode(RenderNode* node);
+    void addRenderNode(RenderNode* node, bool placeFront);  // add RenderNode
+    void removeRenderNode(RenderNode* node);   // remove RenderNode
 
     void setContentDrawBounds(const Rect& bounds) { mContentDrawBounds = bounds; }
 
