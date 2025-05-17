@@ -36,6 +36,7 @@ namespace uirenderer {
 
 class RenderState;
 
+// a Layer has dimemsions and is backed by a backend specific texture or framebuffer
 /**
  * A layer has dimensions and is backed by a backend specific texture or framebuffer.
  */
