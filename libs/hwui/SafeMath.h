@@ -26,6 +26,7 @@
 // SafeMath always check that a series of operations do not overflow.
 // This must be correct for all platforms, because this is a check for safety at runtime.
 
+// 安全的数学计算，避免溢出
 class SafeMath {
 public:
     SafeMath() = default;
