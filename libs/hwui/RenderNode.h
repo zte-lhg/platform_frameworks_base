@@ -74,6 +74,7 @@ class RenderNode;
  * recorded stream of canvas operations is refreshed. The RenderNode (and its properties) stay
  * attached.
  */
+// 持有 render playback 的特性
 class RenderNode : public VirtualLightRefBase {
     friend class TestUtils;  // allow TestUtils to access syncDisplayList / syncProperties
 
@@ -323,7 +324,7 @@ public:
      * Used by the RenderPipeline to attach an offscreen surface to the RenderNode.
      * The surface is then will be used to store the contents of a layer.
      */
-    void setLayerSurface(sk_sp<SkSurface> layer) {
+    void setLayerSurface(sk_sp<SkSurface> layer) {  // 利用 skSurface 保存 layer 的 contents
         if (layer.get()) {
             if (!mSkiaLayer.get()) {
                 mSkiaLayer = std::make_unique<skiapipeline::SkiaLayer>();
