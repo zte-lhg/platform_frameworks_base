@@ -38,9 +38,9 @@ class SkRRect;
 namespace android {
 
 // Holds an SkCanvas reference plus additional native data.
-class SkiaCanvas : public Canvas {
+class SkiaCanvas : public Canvas {  // android skCanvas reference plus additional native data
 public:
-    explicit SkiaCanvas(const SkBitmap& bitmap);
+    explicit SkiaCanvas(const SkBitmap& bitmap);  // 通过一个 skBitmap 构造
 
     /**
      *  Create a new SkiaCanvas.
@@ -49,9 +49,9 @@ public:
      *      not be NULL. This constructor does not take ownership, so the caller
      *      must guarantee that it remains valid while the SkiaCanvas is valid.
      */
-    explicit SkiaCanvas(SkCanvas* canvas);
+    explicit SkiaCanvas(SkCanvas* canvas);  // 包含一个 skCanvas
 
-    virtual ~SkiaCanvas();
+    virtual ~SkiaCanvas();  // 析构函数
 
     virtual void resetRecording(int width, int height,
                                 uirenderer::RenderNode* renderNode) override {
@@ -106,7 +106,7 @@ public:
     virtual void setPaintFilter(sk_sp<PaintFilter> paintFilter) override;
 
     virtual SkCanvasState* captureCanvasState() const override;
-
+    // drawColor and drawPaint
     virtual void drawColor(int color, SkBlendMode mode) override;
     virtual void drawPaint(const Paint& paint) override;
 
@@ -141,11 +141,13 @@ public:
     virtual void drawBitmapMesh(Bitmap& bitmap, int meshWidth, int meshHeight,
                                 const float* vertices, const int* colors,
                                 const Paint* paint) override;
+    // drawNinePatch 九图
     virtual void drawNinePatch(Bitmap& bitmap, const android::Res_png_9patch& chunk, float dstLeft,
                                float dstTop, float dstRight, float dstBottom,
                                const Paint* paint) override;
+    // drawAnimateImage 动画
     virtual double drawAnimatedImage(AnimatedImageDrawable* imgDrawable) override;
-
+    // drawVectorDrawable 可向量化的位图
     virtual void drawVectorDrawable(VectorDrawableRoot* vectorDrawable) override;
 
     virtual void drawRoundRect(uirenderer::CanvasPropertyPrimitive* left,
@@ -170,7 +172,7 @@ protected:
     SkCanvas* asSkCanvas() { return mCanvas; }
     void reset(SkCanvas* skiaCanvas);
     void drawDrawable(SkDrawable* drawable) { mCanvas->drawDrawable(drawable); }
-
+    // drawGlyphs 画多变形
     virtual void drawGlyphs(ReadGlyphFunc glyphFunc, int count, const Paint& paint, float x,
                             float y, float totalAdvance) override;
     virtual void drawLayoutOnPath(const minikin::Layout& layout, float hOffset, float vOffset,
@@ -228,7 +230,7 @@ private:
     bool useGainmapShader(Bitmap& bitmap);
 
     class Clip;
-
+    // skCanvasOwned skiaCanvas 拥有一个 SkCanvas
     std::unique_ptr<SkCanvas> mCanvasOwned;  // Might own a canvas we allocated.
     SkCanvas* mCanvas;                       // We do NOT own this canvas, it must survive us
                                              // unless it is the same as mCanvasOwned.get().
