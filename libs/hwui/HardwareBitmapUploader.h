@@ -27,7 +27,7 @@ class HardwareBitmapUploader {
 public:
     static void initialize();
     static void terminate();
-
+    // allocateHardwareBitmap
     static sk_sp<Bitmap> allocateHardwareBitmap(const SkBitmap& sourceBitmap);
 
 #ifdef __ANDROID__
