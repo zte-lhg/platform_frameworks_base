@@ -23,6 +23,7 @@
 namespace android {
 namespace uirenderer {
 
+// 属性动画
 class PropertyAnimator {
 public:
     PropertyAnimator(PropertyValuesHolder* holder, Interpolator* interpolator, nsecs_t startDelay,
