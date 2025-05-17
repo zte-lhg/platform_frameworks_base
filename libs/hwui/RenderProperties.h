@@ -137,6 +137,7 @@ private:
 /*
  * Data structure that holds the properties for a RenderNode
  */
+// Data Structure that 持有 RenderNode 的引用
 class RenderProperties {
 public:
     RenderProperties();
@@ -613,7 +614,7 @@ private:
          * In the common translation-only case, the matrix isn't necessarily allocated,
          * and the mTranslation properties are used directly.
          */
-        SkMatrix* mTransformMatrix;
+        SkMatrix* mTransformMatrix;  // SkMatrix mTransformMatrix
 
         Sk3DView mTransformCamera;
 
