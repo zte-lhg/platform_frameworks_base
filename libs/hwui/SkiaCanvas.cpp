@@ -145,7 +145,7 @@ void SkiaCanvas::reset(SkCanvas* skiaCanvas) {
 void SkiaCanvas::setBitmap(const SkBitmap& bitmap) {
     // deletes the previously owned canvas (if any)
     mCanvasOwned.reset(new SkCanvas(bitmap));
-    mCanvas = mCanvasOwned.get();
+    mCanvas = mCanvasOwned.get();  // skiaCanvas setBitmap set SkBitmap as a new skiaBitmap
 
     // clean up the old save stack
     mSaveStack.reset(nullptr);
@@ -164,7 +164,7 @@ int SkiaCanvas::width() {
 }
 
 int SkiaCanvas::height() {
-    return mCanvas->imageInfo().height();
+    return mCanvas->imageInfo().height();  // skiaCanvas 包含有一个 skia imageInfo
 }
 
 // ----------------------------------------------------------------------------
@@ -223,11 +223,12 @@ void SkiaCanvas::restoreToCount(int restoreCount) {
 
 int SkiaCanvas::saveLayer(float left, float top, float right, float bottom, const SkPaint* paint) {
     const SkRect bounds = SkRect::MakeLTRB(left, top, right, bottom);
-    const SkCanvas::SaveLayerRec rec(&bounds, paint);
-
+    const SkCanvas::SaveLayerRec rec(&bounds, paint);  // save the [left, top, right, bottom] rect and use paint
+    // mCanvas saveLayer
     return mCanvas->saveLayer(rec);
 }
 
+// saveLayerAlpha 设置 alpha 值
 int SkiaCanvas::saveLayerAlpha(float left, float top, float right, float bottom, int alpha) {
     if (static_cast<unsigned>(alpha) < 0xFF) {
         SkPaint alphaPaint;
@@ -269,7 +270,7 @@ void SkiaCanvas::punchHole(const SkRRect& rect, float alpha) {
     paint.setColor(SkColors::kBlack);
     paint.setAlphaf(alpha);
     paint.setBlendMode(SkBlendMode::kDstOut);
-    mCanvas->drawRRect(rect, paint);
+    mCanvas->drawRRect(rect, paint);  // mCanvas drawPRect rect and use paint
 }
 
 // ----------------------------------------------------------------------------
@@ -314,7 +315,7 @@ void SkiaCanvas::applyPersistentClips(size_t clipStartIndex) {
     const auto end = mClipStack.cend();
 
     // Clip application mutates the CTM.
-    const SkMatrix saveMatrix = mCanvas->getTotalMatrix();
+    const SkMatrix saveMatrix = mCanvas->getTotalMatrix();  // get the SkMatrix
 
     for (auto clip = begin; clip != end; ++clip) {
         clip->apply(mCanvas);
@@ -342,7 +343,7 @@ void SkiaCanvas::getMatrix(SkMatrix* outMatrix) const {
 void SkiaCanvas::setMatrix(const SkMatrix& matrix) {
     mCanvas->setMatrix(matrix);
 }
-
+// canvas state operation Matrix
 void SkiaCanvas::concat(const SkMatrix& matrix) {
     mCanvas->concat(matrix);
 }
@@ -399,7 +400,7 @@ bool SkiaCanvas::getClipBounds(SkRect* outRect) const {
 
 bool SkiaCanvas::quickRejectRect(float left, float top, float right, float bottom) const {
     SkRect bounds = SkRect::MakeLTRB(left, top, right, bottom);
-    return mCanvas->quickReject(bounds);
+    return mCanvas->quickReject(bounds);  // quickReject bounds
 }
 
 bool SkiaCanvas::quickRejectPath(const SkPath& path) const {
@@ -478,7 +479,7 @@ SkCanvasState* SkiaCanvas::captureCanvasState() const {
 // ----------------------------------------------------------------------------
 // Canvas draw operations
 // ----------------------------------------------------------------------------
-
+// SkiaCanvas drawColor 相关接口
 void SkiaCanvas::drawColor(int color, SkBlendMode mode) {
     mCanvas->drawColor(color, mode);
 }
@@ -554,6 +555,7 @@ void SkiaCanvas::drawDoubleRoundRect(const SkRRect& outer, const SkRRect& inner,
     applyLooper(&paint, [&](const SkPaint& p) { mCanvas->drawDRRect(outer, inner, p); });
 }
 
+// skiaCanvas drawCircle 具体调用的的 skCanvas 调用 skia 的 canvas 做具体绘制操作
 void SkiaCanvas::drawCircle(float x, float y, float radius, const Paint& paint) {
     if (CC_UNLIKELY(radius <= 0 || paint.nothingToDraw())) return;
     applyLooper(&paint, [&](const SkPaint& p) { mCanvas->drawCircle(x, y, radius, p); });
@@ -603,7 +605,7 @@ void SkiaCanvas::drawMesh(const Mesh& mesh, sk_sp<SkBlender> blender, const Pain
 // ----------------------------------------------------------------------------
 // Canvas draw operations: Bitmaps
 // ----------------------------------------------------------------------------
-
+// drawBitmap 相关接口
 bool SkiaCanvas::useGainmapShader(Bitmap& bitmap) {
     // If the bitmap doesn't have a gainmap, don't use the gainmap shader
     if (!bitmap.hasGainmap()) return false;
@@ -619,7 +621,7 @@ bool SkiaCanvas::useGainmapShader(Bitmap& bitmap) {
     // If it's an unknown colortype then it's not a bitmap-backed canvas
     if (info.colorType() == SkColorType::kUnknown_SkColorType) return true;
 
-    auto colorSpace = info.colorSpace();
+    auto colorSpace = info.colorSpace();  // get 获取 colorspace 颜色空间
     // If we don't have a colorspace, we can't apply a gainmap
     if (!colorSpace) return false;
 
@@ -634,7 +636,7 @@ bool SkiaCanvas::useGainmapShader(Bitmap& bitmap) {
 
 void SkiaCanvas::drawBitmap(Bitmap& bitmap, float left, float top, const Paint* paint) {
     auto image = bitmap.makeImage();
-
+    // 是否使用 Gainmap Shader hdr 着色器
     if (useGainmapShader(bitmap)) {
         Paint gainmapPaint = paint ? *paint : Paint();
         sk_sp<SkShader> gainmapShader = uirenderer::MakeGainmapShader(
@@ -645,7 +647,7 @@ void SkiaCanvas::drawBitmap(Bitmap& bitmap, float left, float top, const Paint* 
     }
 
     applyLooper(paint, [&](const Paint& p) {
-        mCanvas->drawImage(image, left, top, p.sampling(), &p);
+        mCanvas->drawImage(image, left, top, p.sampling(), &p);  // 最终调用 skCanvas drawImage
     });
 }
 
@@ -674,7 +676,7 @@ void SkiaCanvas::drawBitmap(Bitmap& bitmap, float srcLeft, float srcTop, float s
 
     applyLooper(paint, [&](const Paint& p) {
         mCanvas->drawImageRect(image, srcRect, dstRect, p.sampling(), &p,
-                               SkCanvas::kFast_SrcRectConstraint);
+                               SkCanvas::kFast_SrcRectConstraint);   // drawImage 到指定的 Rect 区域 
     });
 }
 
@@ -799,7 +801,7 @@ void SkiaCanvas::drawNinePatch(Bitmap& bitmap, const Res_png_9patch& chunk, floa
 
     lattice.fBounds = nullptr;
     SkRect dst = SkRect::MakeLTRB(dstLeft, dstTop, dstRight, dstBottom);
-    auto image = bitmap.makeImage();
+    auto image = bitmap.makeImage();  // bitmao makeImage 创建一个 bitmap
     applyLooper(paint, [&](const Paint& p) {
         mCanvas->drawImageLattice(image.get(), lattice, dst, p.filterMode(), &p);
     });
@@ -841,6 +843,7 @@ void SkiaCanvas::drawGlyphs(ReadGlyphFunc glyphFunc, int count, const Paint& pai
     applyLooper(&paintCopy, [&](const SkPaint& p) { mCanvas->drawTextBlob(textBlob, 0, 0, p); });
 }
 
+// drawLayoutOnPath
 void SkiaCanvas::drawLayoutOnPath(const minikin::Layout& layout, float hOffset, float vOffset,
                                   const Paint& paint, const SkPath& path, size_t start,
                                   size_t end) {
@@ -883,7 +886,7 @@ void SkiaCanvas::drawLayoutOnPath(const minikin::Layout& layout, float hOffset, 
 // ----------------------------------------------------------------------------
 // Canvas draw operations: Animations
 // ----------------------------------------------------------------------------
-
+// canvas draw 绘制操作 Animations
 void SkiaCanvas::drawRoundRect(uirenderer::CanvasPropertyPrimitive* left,
                                uirenderer::CanvasPropertyPrimitive* top,
                                uirenderer::CanvasPropertyPrimitive* right,
@@ -922,11 +925,11 @@ void SkiaCanvas::drawPicture(const SkPicture& picture) {
 // ----------------------------------------------------------------------------
 
 void SkiaCanvas::drawLayer(uirenderer::DeferredLayerUpdater* layerUpdater) {
-    LOG_ALWAYS_FATAL("SkiaCanvas can't directly draw Layers");
+    LOG_ALWAYS_FATAL("SkiaCanvas can't directly draw Layers");  // can not directly draw Layers
 }
 
 void SkiaCanvas::drawRenderNode(uirenderer::RenderNode* renderNode) {
-    LOG_ALWAYS_FATAL("SkiaCanvas can't directly draw RenderNodes");
+    LOG_ALWAYS_FATAL("SkiaCanvas can't directly draw RenderNodes");  // can not directly draw RenderNodes
 }
 
 }  // namespace android
