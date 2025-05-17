@@ -1,5 +1,6 @@
 LIBHWUI { # platform-only /* HWUI isn't current a module, so all of these are still platform-only */
   global:
+    // libhwui 暴露的 cAPI，可以通过 ndk 接口访问的接口
     /* listing of all C APIs to be exposed by libhwui to consumers outside of the module */
     ABitmap_getInfoFromJava;
     ABitmap_acquireBitmapFromJava;
@@ -46,6 +47,7 @@ LIBHWUI { # platform-only /* HWUI isn't current a module, so all of these are st
     *;
 };
 
+// libhwui 暴露给其他 C++ 调用的接口
 LIBHWUI_PLATFORM {
   global:
     extern "C++" {
