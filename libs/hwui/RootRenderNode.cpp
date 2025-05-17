@@ -49,6 +49,7 @@ private:
     uint32_t mRequestId;
 };
 
+// rootRenderNode prepareTree
 void RootRenderNode::prepareTree(TreeInfo& info) {
     info.errorHandler = mErrorHandler.get();
 
@@ -286,7 +287,7 @@ public:
 private:
     sp<RootRenderNode> mRootNode;
 };
-
+// 创建 AnimationContext 动画上下文
 AnimationContext* ContextFactoryImpl::createAnimationContext(renderthread::TimeLord& clock) {
     return new AnimationContextBridge(clock, mRootNode);
 }
