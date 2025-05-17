@@ -62,6 +62,7 @@ enum class DisplayListOpType : uint8_t {
 #undef X
 };
 
+// displayList Op 操作符
 struct DisplayListOp {
     const uint8_t type : 8;
     const uint32_t skip : 24;
@@ -88,15 +89,16 @@ struct DrawImagePayload {
     DrawImagePayload& operator=(DrawImagePayload&&) = default;
     ~DrawImagePayload() = default;
 
-    sk_sp<SkImage> image;
-    BitmapPalette palette;
+    sk_sp<SkImage> image;         // 包含一个 Skimage
+    BitmapPalette palette;        // 包含一个 BitmapPalette 调色板
 
-    sk_sp<SkImage> gainmapImage;
+    sk_sp<SkImage> gainmapImage;  // 包含有一个 skImage gainmapImage
     SkGainmapInfo gainmapInfo;
 };
 
 class RecordingCanvas;
 
+// DisplayListData 绘制数据
 class DisplayListData final {
 public:
     DisplayListData() : mHasText(false), mHasFill(false) {}
@@ -186,6 +188,7 @@ private:
     bool mHasFill : 1;
 };
 
+// RecordingCanvas 将 view 的 drawOps 保存在 DisplayListData 当中
 class RecordingCanvas final : public SkCanvasVirtualEnforcer<SkNoDrawCanvas> {
 public:
     RecordingCanvas();
@@ -271,7 +274,7 @@ private:
         }
     }
 
-    DisplayListData* fDL;
+    DisplayListData* fDL;   // 包含有 DisplayListData 的指针
 
     /**
      * mClipMayBeComplex tracks if the current clip is a rectangle. This flag is used to promote
