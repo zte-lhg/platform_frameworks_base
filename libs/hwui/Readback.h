@@ -42,9 +42,10 @@ public:
     /**
      * Copies the surface's most recently queued buffer into the provided bitmap.
      */
+    // copySurfaceInto the request buffer use ANativeWindow as the partimities
     void copySurfaceInto(ANativeWindow* window, const std::shared_ptr<CopyRequest>& request);
 
-    CopyResult copyHWBitmapInto(Bitmap* hwBitmap, SkBitmap* bitmap);
+    CopyResult copyHWBitmapInto(Bitmap* hwBitmap, SkBitmap* bitmap);   // copy hwBitmap into bitmap
     CopyResult copyImageInto(const sk_sp<SkImage>& image, SkBitmap* bitmap);
 
     CopyResult copyLayerInto(DeferredLayerUpdater* layer, SkBitmap* bitmap);
@@ -53,9 +54,9 @@ private:
     CopyResult copyImageInto(const sk_sp<SkImage>& image, const Rect& srcRect, SkBitmap* bitmap);
 
     bool copyLayerInto(Layer* layer, const SkRect* srcRect, const SkRect* dstRect,
-                       SkBitmap* bitmap);
+                       SkBitmap* bitmap);   // copyLayerInto the bitmap
 
-    renderthread::RenderThread& mRenderThread;
+    renderthread::RenderThread& mRenderThread;   // use renderThread
 };
 
 }  // namespace uirenderer
