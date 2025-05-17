@@ -158,10 +158,10 @@ public:
     static void setRtAnimationsEnabled(bool enabled);
 
 private:
-    RenderThread& mRenderThread;
-    CanvasContext* mContext;
+    RenderThread& mRenderThread;   // 包含有 renderThread
+    CanvasContext* mContext;       // 包含有 CanvasContext
 
-    DrawFrameTask mDrawFrameTask;
+    DrawFrameTask mDrawFrameTask;   // drawFrameTask task
 
     void destroyContext();
 
