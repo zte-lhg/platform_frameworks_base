@@ -62,13 +62,14 @@ void Readback::copySurfaceInto(ANativeWindow* window, const std::shared_ptr<Copy
     int rawSourceFence;
     ARect cropRect;
     uint32_t windowTransform;
+    // use ANativeWindow getLastQueuedBuffer2 获取 cropRect 最后一帧
     status_t err = ANativeWindow_getLastQueuedBuffer2(window, &rawSourceBuffer, &rawSourceFence,
                                                       &cropRect, &windowTransform);
     base::unique_fd sourceFence(rawSourceFence);
     // Really this shouldn't ever happen, but better safe than sorry.
     if (err == UNKNOWN_TRANSACTION) {
         ALOGW("Readback failed to ANativeWindow_getLastQueuedBuffer2 - who are we talking to?");
-        return request->onCopyFinished(CopyResult::SourceInvalid);
+        return request->onCopyFinished(CopyResult::SourceInvalid);   // onCopyFinished 结束
     }
     ALOGV("Using new path, cropRect=" RECT_STRING ", transform=%x", ARECT_ARGS(cropRect),
           windowTransform);
@@ -81,9 +82,9 @@ void Readback::copySurfaceInto(ANativeWindow* window, const std::shared_ptr<Copy
         ALOGW("Surface doesn't have any previously queued frames, nothing to readback from");
         return request->onCopyFinished(CopyResult::SourceEmpty);
     }
-    UniqueAHardwareBuffer sourceBuffer{rawSourceBuffer};
-    AHardwareBuffer_Desc description;
-    AHardwareBuffer_describe(sourceBuffer.get(), &description);
+    UniqueAHardwareBuffer sourceBuffer{rawSourceBuffer};  // UniqueAHardwareBuffer source Buffer rawSourceBuffer 独立的 AHardwareBuffer
+    AHardwareBuffer_Desc description;   // AHardwareBuffer_Desc 的描述信息
+    AHardwareBuffer_describe(sourceBuffer.get(), &description);  // 获取 AHardwareBuffer Desc 相关信息
     if (description.usage & AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT) {
         ALOGW("Surface is protected, unable to copy from it");
         return request->onCopyFinished(CopyResult::SourceInvalid);
@@ -95,7 +96,7 @@ void Readback::copySurfaceInto(ANativeWindow* window, const std::shared_ptr<Copy
         if (sourceFence != -1 && sync_wait(sourceFence.get(), syncWaitTimeoutMs) != NO_ERROR) {
             ALOGE("Timeout (%dms) exceeded waiting for buffer fence, abandoning readback attempt",
                   syncWaitTimeoutMs);
-            return request->onCopyFinished(CopyResult::Timeout);
+            return request->onCopyFinished(CopyResult::Timeout);   // sync_wait 等待 buffer 流转到 client 端
         }
     }
 
@@ -105,26 +106,26 @@ void Readback::copySurfaceInto(ANativeWindow* window, const std::shared_ptr<Copy
     // process is producing buffers for the application to display, then
     // ANativeWindow_getBuffersDataSpace will return an unknown answer, so grab
     // the dataspace from buffer metadata instead, if it exists.
-    if (dataspace == 0) {
+    if (dataspace == 0) {  // AHardwareBuffer getDataSpace 获取 AHardwareBuffer 的 DataSpace
         dataspace = AHardwareBuffer_getDataSpace(sourceBuffer.get());
     }
 
     sk_sp<SkColorSpace> colorSpace =
-            DataSpaceToColorSpace(static_cast<android_dataspace>(dataspace));
+            DataSpaceToColorSpace(static_cast<android_dataspace>(dataspace));  // 获取 SkColorSpace 的颜色空间信息
     sk_sp<SkImage> image = SkImages::DeferredFromAHardwareBuffer(sourceBuffer.get(),
-                                                                 kPremul_SkAlphaType, colorSpace);
+                                                                 kPremul_SkAlphaType, colorSpace);  // DeferredFromAHardwareBuffer 从 sourceBuffer 获取信息
 
     if (!image.get()) {
         return request->onCopyFinished(CopyResult::UnknownError);
     }
 
-    sk_sp<GrDirectContext> grContext = mRenderThread.requireGrContext();
+    sk_sp<GrDirectContext> grContext = mRenderThread.requireGrContext();  // requireGrContext 获取 openGL GrContext openGL 上下文信息
 
     SkRect srcRect = request->srcRect.toSkRect();
 
     SkRect imageSrcRect = SkRect::MakeIWH(description.width, description.height);
     SkISize imageWH = SkISize::Make(description.width, description.height);
-    if (cropRect.left < cropRect.right && cropRect.top < cropRect.bottom) {
+    if (cropRect.left < cropRect.right && cropRect.top < cropRect.bottom) {  // imageSrcRect 获取 imageSrcRect 信息
         imageSrcRect =
                 SkRect::MakeLTRB(cropRect.left, cropRect.top, cropRect.right, cropRect.bottom);
         imageWH = SkISize::Make(cropRect.right - cropRect.left, cropRect.bottom - cropRect.top);
@@ -172,12 +173,12 @@ void Readback::copySurfaceInto(ANativeWindow* window, const std::shared_ptr<Copy
         }
     }
 
-    SkBitmap skBitmap = request->getDestinationBitmap(srcRect.width(), srcRect.height());
+    SkBitmap skBitmap = request->getDestinationBitmap(srcRect.width(), srcRect.height());  // getDestinationBitmap 获取目的 Bitmap 信息
     SkBitmap* bitmap = &skBitmap;
     sk_sp<SkSurface> tmpSurface =
             SkSurfaces::RenderTarget(mRenderThread.getGrContext(), skgpu::Budgeted::kYes,
                                      bitmap->info(), 0, kTopLeft_GrSurfaceOrigin, nullptr);
-
+    // SkSurface::RenderTarget 渲染目的 SkSurface
     // if we can't generate a GPU surface that matches the destination bitmap (e.g. 565) then we
     // attempt to do the intermediate rendering step in 8888
     if (!tmpSurface.get()) {
@@ -249,7 +250,7 @@ void Readback::copySurfaceInto(ANativeWindow* window, const std::shared_ptr<Copy
 
     static constexpr float kMaxLuminanceNits = 4000.f;
     tonemapPaint(image->imageInfo(), canvas->imageInfo(), kMaxLuminanceNits, paint);
-
+    // canvas DrawImageRect
     canvas->drawImageRect(image, imageSrcRect, imageDstRect, sampling, &paint, constraint);
     canvas->restore();
 
