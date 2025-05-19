@@ -111,7 +111,7 @@ bool SkiaGpuPipeline::createOrUpdateLayer(RenderNode* node,
     }
     return false;
 }
-
+// SkiaGpuPipeLine pinImages 
 bool SkiaGpuPipeline::pinImages(std::vector<SkImage*>& mutableImages) {
     if (!mRenderThread.getGrContext()) {
         ALOGD("Trying to pin an image with an invalid GrContext");
@@ -134,6 +134,7 @@ void SkiaGpuPipeline::unpinImages() {
     mPinnedImages.clear();
 }
 
+// SkiaGpuPipeline prepareToDraw 准备绘制 bitmap
 void SkiaGpuPipeline::prepareToDraw(const RenderThread& thread, Bitmap* bitmap) {
     GrDirectContext* context = thread.getGrContext();
     if (context && !bitmap->isHardware()) {
@@ -150,6 +151,7 @@ void SkiaGpuPipeline::prepareToDraw(const RenderThread& thread, Bitmap* bitmap) 
     }
 }
 
+// SkGpuPipeline getBufferSkSurface 获取 skSurface
 sk_sp<SkSurface> SkiaGpuPipeline::getBufferSkSurface(
         const renderthread::HardwareBufferRenderParams& bufferParams) {
     auto bufferColorSpace = bufferParams.getColorSpace();
@@ -163,11 +165,12 @@ sk_sp<SkSurface> SkiaGpuPipeline::getBufferSkSurface(
     return mBufferSurface;
 }
 
+// SkiaGpuPipeline dumpResourceCacheUsage dump 当前的 Cache Usage
 void SkiaGpuPipeline::dumpResourceCacheUsage() const {
     int resources;
     size_t bytes;
     mRenderThread.getGrContext()->getResourceCacheUsage(&resources, &bytes);
-    size_t maxBytes = mRenderThread.getGrContext()->getResourceCacheLimit();
+    size_t maxBytes = mRenderThread.getGrContext()->getResourceCacheLimit();  // mRenderThread 获取 GrContext getResourceCacheLimit
 
     SkString log("Resource Cache Usage:\n");
     log.appendf("%8d items\n", resources);
@@ -184,7 +187,7 @@ void SkiaGpuPipeline::setHardwareBuffer(AHardwareBuffer* buffer) {
     }
 
     if (buffer) {
-        AHardwareBuffer_acquire(buffer);
+        AHardwareBuffer_acquire(buffer);   // AHardwareBuffer_acquire buffer 获取 mHardwareBuffer 
         mHardwareBuffer = buffer;
     }
 }
