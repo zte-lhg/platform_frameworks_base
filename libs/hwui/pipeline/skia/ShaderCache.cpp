@@ -186,7 +186,7 @@ void ShaderCache::saveToDiskLocked() {
         mMutex.lock();
     }
 }
-
+// ShaderCache store 存储，按照 key data 方式存储入 ShaderCache 中
 void ShaderCache::store(const SkData& key, const SkData& data, const SkString& /*description*/) {
     ATRACE_NAME("ShaderCache::store");
     std::lock_guard lock(mMutex);
@@ -243,7 +243,7 @@ void ShaderCache::store(const SkData& key, const SkData& data, const SkString& /
         deferredSaveThread.detach();
     }
 }
-
+// ShaderCache onVKFrameFlushed 刷新进入 context 当中
 void ShaderCache::onVkFrameFlushed(GrDirectContext* context) {
     {
         mMutex.lock_shared();
