@@ -200,13 +200,14 @@ static void android_view_ThreadedRenderer_setSurface(JNIEnv* env, jobject clazz,
     if (jsurface) {
         window = fromSurface(env, jsurface);
     }
+    // 给 ThreadRender 设置一个 Surface
     bool enableTimeout = true;
     if (discardBuffer) {
         // Currently only Surface#lockHardwareCanvas takes this path
         enableTimeout = false;
         proxy->setSwapBehavior(SwapBehavior::kSwap_discardBuffer);
     }
-    proxy->setSurface(window, enableTimeout);
+    proxy->setSurface(window, enableTimeout);  // set a Surface to RenderThread
     if (window) {
         ANativeWindow_release(window);
     }
@@ -216,7 +217,7 @@ static void android_view_ThreadedRenderer_setSurfaceControl(JNIEnv* env, jobject
         jlong proxyPtr, jlong surfaceControlPtr) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
     ASurfaceControl* surfaceControl = reinterpret_cast<ASurfaceControl*>(surfaceControlPtr);
-    proxy->setSurfaceControl(surfaceControl);
+    proxy->setSurfaceControl(surfaceControl);  // set a SurfaceControl to RenderThread
 }
 
 static jboolean android_view_ThreadedRenderer_pause(JNIEnv* env, jobject clazz,
@@ -281,6 +282,7 @@ static void android_view_ThreadedRenderer_setIsSystemOrPersistent(JNIEnv* env, j
     Properties::setIsSystemOrPersistent(isSystemOrPersistent);
 }
 
+// sync and DrawFrame for the ThreadedRenderer 
 static int android_view_ThreadedRenderer_syncAndDrawFrame(JNIEnv* env, jobject clazz,
                                                           jlong proxyPtr, jlongArray frameInfo,
                                                           jint frameInfoSize) {
@@ -414,6 +416,7 @@ static void android_view_ThreadedRenderer_dumpGlobalProfileInfo(JNIEnv* env, job
     RenderProxy::dumpGraphicsMemory(fd, true, dumpFlags & DumpFlags::Reset);
 }
 
+// add a RenderNode to ThreadedRenderer
 static void android_view_ThreadedRenderer_addRenderNode(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jlong renderNodePtr, jboolean placeFront) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -721,6 +724,7 @@ public:
     }
 };
 
+// createHarewareBitmap From RenderNode
 static jobject android_view_ThreadedRenderer_createHardwareBitmapFromRenderNode(JNIEnv* env,
         jobject clazz, jlong renderNodePtr, jint jwidth, jint jheight) {
 #ifdef __ANDROID__
@@ -751,7 +755,7 @@ static jobject android_view_ThreadedRenderer_createHardwareBitmapFromRenderNode(
     // Note that ownership of this window is maintained by AImageReader, so we
     // shouldn't need to wrap around a smart pointer.
     ANativeWindow* window;
-    result = AImageReader_getWindow(rawReader, &window);
+    result = AImageReader_getWindow(rawReader, &window);  // AImageRender_getWindow 获取一个 window
 
     if (result != AMEDIA_OK) {
         ALOGW("Error retrieving the native window!");
@@ -763,13 +767,13 @@ static jobject android_view_ThreadedRenderer_createHardwareBitmapFromRenderNode(
         ContextFactory factory;
         RenderProxy proxy{true, renderNode, &factory};
         proxy.setSwapBehavior(SwapBehavior::kSwap_discardBuffer);
-        proxy.setSurface(window);
+        proxy.setSurface(window);  // RenderProxy setSurface
         // Shadows can't be used via this interface, so just set the light source
         // to all 0s.
         proxy.setLightAlpha(0, 0);
         proxy.setLightGeometry((Vector3){0, 0, 0}, 0);
         nsecs_t vsync = systemTime(SYSTEM_TIME_MONOTONIC);
-        UiFrameInfoBuilder(proxy.frameInfo())
+        UiFrameInfoBuilder(proxy.frameInfo())  // setFrameInfo SetVsync
                 .setVsync(vsync, vsync, UiFrameInfoBuilder::INVALID_VSYNC_ID,
                     UiFrameInfoBuilder::UNKNOWN_DEADLINE,
                     UiFrameInfoBuilder::UNKNOWN_FRAME_INTERVAL)
@@ -804,7 +808,7 @@ static jobject android_view_ThreadedRenderer_createHardwareBitmapFromRenderNode(
         // the returned bitmap has a color space.
         cs = SkColorSpace::MakeSRGB();
     }
-    sk_sp<Bitmap> bitmap = Bitmap::createFrom(buffer, cs);
+    sk_sp<Bitmap> bitmap = Bitmap::createFrom(buffer, cs);  // create From buffer and colorspace
     return bitmap::createBitmap(env, bitmap.release(),
             android::bitmap::kBitmapCreateFlag_Premultiplied);
 #else
