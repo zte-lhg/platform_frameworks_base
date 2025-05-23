@@ -157,7 +157,7 @@ static jint android_view_ThreadedRenderer_getRenderThreadTid(JNIEnv* env, jobjec
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
     return proxy->getRenderThreadTid();
 }
-
+// 创建一个 RootRenderNode
 static jlong android_view_ThreadedRenderer_createRootRenderNode(JNIEnv* env, jobject clazz) {
     RootRenderNode* node = new RootRenderNode(std::make_unique<JvmErrorReporter>(env));
     node->incStrong(0);
@@ -165,6 +165,7 @@ static jlong android_view_ThreadedRenderer_createRootRenderNode(JNIEnv* env, job
     return reinterpret_cast<jlong>(node);
 }
 
+// 创建一个 rootRenderNode 已经一个 RenderProxy 一个 RenderProxy 包含有一个 rootRenderNode 以及一个 GlContext 以及 syncFrameTask
 static jlong android_view_ThreadedRenderer_createProxy(JNIEnv* env, jobject clazz,
         jboolean translucent, jlong rootRenderNodePtr) {
     RootRenderNode* rootRenderNode = reinterpret_cast<RootRenderNode*>(rootRenderNodePtr);
@@ -192,7 +193,7 @@ static void android_view_ThreadedRenderer_setName(JNIEnv* env, jobject clazz,
     proxy->setName(name);
     env->ReleaseStringUTFChars(jname, name);
 }
-
+// ThreadedRender 设置 render 渲染的 Surface
 static void android_view_ThreadedRenderer_setSurface(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jobject jsurface, jboolean discardBuffer) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -213,6 +214,7 @@ static void android_view_ThreadedRenderer_setSurface(JNIEnv* env, jobject clazz,
     }
 }
 
+// 提供 threadedRenderer 设置一个 SurfaceControl
 static void android_view_ThreadedRenderer_setSurfaceControl(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jlong surfaceControlPtr) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -237,13 +239,13 @@ static void android_view_ThreadedRenderer_setLightAlpha(JNIEnv* env, jobject cla
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
     proxy->setLightAlpha((uint8_t) (255 * ambientShadowAlpha), (uint8_t) (255 * spotShadowAlpha));
 }
-
+// ThreadedRenderer 设置 lightGeometry 位置
 static void android_view_ThreadedRenderer_setLightGeometry(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jfloat lightX, jfloat lightY, jfloat lightZ, jfloat lightRadius) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
     proxy->setLightGeometry((Vector3){lightX, lightY, lightZ}, lightRadius);
 }
-
+// ThreadRenderer 设置 Opaque 透明色
 static void android_view_ThreadedRenderer_setOpaque(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jboolean opaque) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -282,7 +284,7 @@ static void android_view_ThreadedRenderer_setIsSystemOrPersistent(JNIEnv* env, j
     Properties::setIsSystemOrPersistent(isSystemOrPersistent);
 }
 
-// sync and DrawFrame for the ThreadedRenderer 
+// sync and DrawFrame for the ThreadedRenderer 开始绘制
 static int android_view_ThreadedRenderer_syncAndDrawFrame(JNIEnv* env, jobject clazz,
                                                           jlong proxyPtr, jlongArray frameInfo,
                                                           jint frameInfoSize) {
@@ -301,7 +303,7 @@ static void android_view_ThreadedRenderer_destroy(JNIEnv* env, jobject clazz,
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
     proxy->destroy();
 }
-
+// 注册动画的 RenderNode
 static void android_view_ThreadedRenderer_registerAnimatingRenderNode(JNIEnv* env, jobject clazz,
         jlong rootNodePtr, jlong animatingNodePtr) {
     RootRenderNode* rootRenderNode = reinterpret_cast<RootRenderNode*>(rootNodePtr);
@@ -316,6 +318,7 @@ static void android_view_ThreadedRenderer_registerVectorDrawableAnimator(JNIEnv*
     rootRenderNode->addVectorDrawableAnimator(animator);
 }
 
+// 创建 TextureLayer 纹理层
 static jlong android_view_ThreadedRenderer_createTextureLayer(JNIEnv* env, jobject clazz,
         jlong proxyPtr) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -329,7 +332,7 @@ static void android_view_ThreadedRenderer_buildLayer(JNIEnv* env, jobject clazz,
     RenderNode* node = reinterpret_cast<RenderNode*>(nodePtr);
     proxy->buildLayer(node);
 }
-
+// 将 ThreadedRenderer layer 拷贝到一个 SkBitmap 当中
 static jboolean android_view_ThreadedRenderer_copyLayerInto(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jlong layerPtr, jlong bitmapPtr) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -352,7 +355,7 @@ static void android_view_ThreadedRenderer_cancelLayerUpdate(JNIEnv* env, jobject
     DeferredLayerUpdater* layer = reinterpret_cast<DeferredLayerUpdater*>(layerPtr);
     proxy->cancelLayerUpdate(layer);
 }
-
+// ThreadedRenderer detach Surface Texture 将 SurfaceTexure 同 ThreadedRenderer 解除
 static void android_view_ThreadedRenderer_detachSurfaceTexture(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jlong layerPtr) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -430,7 +433,7 @@ static void android_view_ThreadedRenderer_removeRenderNode(JNIEnv* env, jobject 
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
     proxy->removeRenderNode(renderNode);
 }
-
+// 绘制一个 RenderNode
 static void android_view_ThreadedRendererd_drawRenderNode(JNIEnv* env, jobject clazz,
         jlong proxyPtr, jlong renderNodePtr) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -480,7 +483,7 @@ public:
         // Now snapshot a copy of the active map so this PictureWrapper becomes self-sufficient
         mTextureMap = state->mActiveMap;
     }
-
+    // 从 Cache 当中创建一个 SkImage，性能优化
     static sk_sp<SkImage> imageForCache(SkImage* img) {
         const SkBitmap* bitmap = as_IB(img)->onPeekBitmap();
         // This is a mutable bitmap pretending to be an immutable SkImage. As we're going to
@@ -530,7 +533,7 @@ public:
         }
         return SkData::MakeEmpty();
     }
-
+    // 将 Image 串行化到一个 SkData 当中
     static sk_sp<SkData> serializeImage(SkImage* img, void* ctx) {
         PictureWrapper* context = reinterpret_cast<PictureWrapper*>(ctx);
         const uint32_t id = img->uniqueID();
@@ -663,7 +666,7 @@ static void android_view_ThreadedRenderer_setFrameCommitCallback(JNIEnv* env, jo
                 [wrapper](bool didProduceBuffer) { wrapper->onFrameCommit(didProduceBuffer); });
     }
 }
-
+// 设置 FrameCompletedCallback 回调
 static void android_view_ThreadedRenderer_setFrameCompleteCallback(JNIEnv* env,
         jobject clazz, jlong proxyPtr, jobject callback) {
     RenderProxy* proxy = reinterpret_cast<RenderProxy*>(proxyPtr);
@@ -713,7 +716,7 @@ static void android_view_ThreadedRenderer_copySurfaceInto(JNIEnv* env, jobject c
     auto copyRequest = std::make_shared<CopyRequestAdapter>(vm, env->NewGlobalRef(jCopyRequest),
                                                             Rect(left, top, right, bottom));
     ANativeWindow* window = fromSurface(env, jsurface);
-    RenderProxy::copySurfaceInto(window, std::move(copyRequest));
+    RenderProxy::copySurfaceInto(window, std::move(copyRequest));  // PixelCopy Surface 回写
     ANativeWindow_release(window);
 }
 
@@ -778,7 +781,7 @@ static jobject android_view_ThreadedRenderer_createHardwareBitmapFromRenderNode(
                     UiFrameInfoBuilder::UNKNOWN_DEADLINE,
                     UiFrameInfoBuilder::UNKNOWN_FRAME_INTERVAL)
                 .addFlag(FrameInfoFlags::SurfaceCanvas);
-        proxy.syncAndDrawFrame();
+        proxy.syncAndDrawFrame();  // proxy syncAndDrawFrame 同步绘制
     }
 
     AImage* rawImage;
@@ -800,7 +803,7 @@ static jobject android_view_ThreadedRenderer_createHardwareBitmapFromRenderNode(
               width, height);
         // Continue I guess?
     }
-
+    // 获取颜色空间值
     sk_sp<SkColorSpace> cs = uirenderer::DataSpaceToColorSpace(
             static_cast<android_dataspace>(ANativeWindow_getBuffersDataSpace(window)));
     if (cs == nullptr) {
@@ -808,6 +811,7 @@ static jobject android_view_ThreadedRenderer_createHardwareBitmapFromRenderNode(
         // the returned bitmap has a color space.
         cs = SkColorSpace::MakeSRGB();
     }
+    // 创建一个 Bitmap
     sk_sp<Bitmap> bitmap = Bitmap::createFrom(buffer, cs);  // create From buffer and colorspace
     return bitmap::createBitmap(env, bitmap.release(),
             android::bitmap::kBitmapCreateFlag_Premultiplied);
@@ -875,6 +879,7 @@ static void android_view_ThreadedRenderer_setDisplayDensityDpi(JNIEnv*, jclass, 
     DeviceInfo::setDensity(density);
 }
 
+// 初始化显示相关信息
 static void android_view_ThreadedRenderer_initDisplayInfo(
         JNIEnv* env, jclass, jint physicalWidth, jint physicalHeight, jfloat refreshRate,
         jint wideColorDataspace, jlong appVsyncOffsetNanos, jlong presentationDeadlineNanos,
@@ -911,7 +916,7 @@ static void android_view_ThreadedRenderer_addObserver(JNIEnv* env, jclass clazz,
 
     renderProxy->addFrameMetricsObserver(observer);
 }
-
+// ThreadRenderer removeObserver 移植观察者
 static void android_view_ThreadedRenderer_removeObserver(JNIEnv* env, jclass clazz,
         jlong proxyPtr, jlong observerPtr) {
     HardwareRendererObserver* observer = reinterpret_cast<HardwareRendererObserver*>(observerPtr);
