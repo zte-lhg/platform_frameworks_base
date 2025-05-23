@@ -160,7 +160,7 @@ static jobject native_create(JNIEnv* env, std::unique_ptr<SkStream> stream,
                           reinterpret_cast<jlong>(decoder), decoder->width(), decoder->height(),
                           animated, isNinePatch);
 }
-
+// 从文件 fileDescriptor 当中构造一个 ImageDecoder
 static jobject ImageDecoder_nCreateFd(JNIEnv* env, jobject /*clazz*/,
         jobject fileDescriptor, jlong length, jboolean preferAnimation, jobject source) {
 #ifdef _WIN32  // LayoutLib for Windows does not support F_DUPFD_CLOEXEC
@@ -247,7 +247,7 @@ jint postProcessAndRelease(JNIEnv* env, jobject jimageDecoder, std::unique_ptr<C
 
     return env->CallIntMethod(jimageDecoder, gImageDecoder_postProcessMethodID, jcanvas);
 }
-
+// ImageDecoder decodedBitmap 解码 bitmap
 static jobject ImageDecoder_nDecodeBitmap(JNIEnv* env, jobject /*clazz*/, jlong nativePtr,
                                           jobject jdecoder, jboolean jpostProcess,
                                           jint targetWidth, jint targetHeight, jobject jsubset,
