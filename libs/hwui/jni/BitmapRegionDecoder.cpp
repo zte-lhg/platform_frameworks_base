@@ -166,7 +166,7 @@ public:
         // avoid sampling "invalid" colors.
         SkRect scaledSubset = scale(desiredSubset, 1.0f / sampleSize);
         SkIRect roundedSubset = scale(scaledSubset.roundOut(), static_cast<float>(sampleSize));
-
+        // 可回收的 Pixel 像素 Allocator 分配器
         RecyclingClippingPixelAllocator allocator(nativeBitmap.get(), false, logicalSubset);
         if (!mGainmapBRD->decodeRegion(&bm, &allocator, roundedSubset, sampleSize, decodeColorType,
                                        requireUnpremul, decodeColorSpace)) {
@@ -360,7 +360,7 @@ static jobject nativeDecodeRegion(JNIEnv* env, jobject, jlong brdHandle, jint in
 
     // Set up the pixel allocator
     skia::BRDAllocator* allocator = nullptr;
-    RecyclingClippingPixelAllocator recycleAlloc(recycledBitmap);
+    RecyclingClippingPixelAllocator recycleAlloc(recycledBitmap);  // 设置 Bitmap 的内存分配器 RecycleAlloc
     HeapAllocator heapAlloc;
     if (javaBitmap) {
         allocator = &recycleAlloc;
