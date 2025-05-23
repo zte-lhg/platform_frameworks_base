@@ -16,7 +16,7 @@ static jmethodID    gInputStream_skipMethodID;
 /**
  *  Wrapper for a Java InputStream.
  */
-class JavaInputStreamAdaptor : public SkStream {
+class JavaInputStreamAdaptor : public SkStream {  // 继承 SkStream
     JavaInputStreamAdaptor(JavaVM* jvm, jobject js, jbyteArray ar, jint capacity,
                            bool swallowExceptions)
             : fJvm(jvm)
@@ -53,7 +53,7 @@ public:
         env->DeleteGlobalRef(fJavaInputStream);
         env->DeleteGlobalRef(fJavaByteArray);
     }
-
+    // 从 java Stream 流构造一个 Stream，提供对应的 read write 函数
     size_t read(void* buffer, size_t size) override {
         auto* env = android::requireEnv(fJvm);
         if (!fSwallowExceptions && checkException(env)) {
