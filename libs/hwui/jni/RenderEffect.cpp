@@ -24,6 +24,7 @@
 
 using namespace android::uirenderer;
 
+// 创建绘制特效 offset
 static jlong createOffsetEffect(
     JNIEnv* env,
     jobject,
@@ -49,6 +50,7 @@ static jlong createBlurEffect(JNIEnv* env , jobject, jfloat radiusX,
     return reinterpret_cast<jlong>(blurFilter.release());
 }
 
+// 创建 bitmapEffect 绘制特效
 static jlong createBitmapEffect(
     JNIEnv* env,
     jobject,
@@ -70,6 +72,7 @@ static jlong createBitmapEffect(
     return reinterpret_cast<jlong>(bitmapFilter.release());
 }
 
+// 创建 ColorFilterEffect 绘制特效
 static jlong createColorFilterEffect(
     JNIEnv* env,
     jobject,
@@ -118,6 +121,7 @@ static jlong createChainEffect(
     return reinterpret_cast<jlong>(composeFilter.release());
 }
 
+// 创建角色器绘制特效
 static jlong createShaderEffect(
     JNIEnv* env,
     jobject,
@@ -138,6 +142,7 @@ static inline int ThrowIAEFmt(JNIEnv* env, const char* fmt, ...) {
     return ret;
 }
 
+// 创建 Runtime Shader 着色器绘制特效
 static jlong createRuntimeShaderEffect(JNIEnv* env, jobject, jlong shaderBuilderHandle,
                                        jstring inputShaderName) {
     SkRuntimeShaderBuilder* builder =
