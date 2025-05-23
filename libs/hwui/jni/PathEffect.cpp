@@ -7,12 +7,12 @@
 
 class SkPathEffectGlue {
 public:
-
+    // SkPathEffectGlue 销毁函数
     static void destructor(JNIEnv* env, jobject, jlong effectHandle) {
         SkPathEffect* effect = reinterpret_cast<SkPathEffect*>(effectHandle);
         SkSafeUnref(effect);
     }
-
+    // SkPathEffect 构造函数
     static jlong Compose_constructor(JNIEnv* env, jobject,
                                      jlong outerHandle, jlong innerHandle) {
         SkPathEffect* outer = reinterpret_cast<SkPathEffect*>(outerHandle);
