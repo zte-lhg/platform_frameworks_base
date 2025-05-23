@@ -49,12 +49,12 @@ static jint android_view_RenderNode_getUsageSize(JNIEnv* env, jobject clazz, jlo
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
     return renderNode->getUsageSize();
 }
-
+// RenderNode 代表一个可绘制的 view，获取 RenderNode AllocateSize 分配的 Size 大小
 static jint android_view_RenderNode_getAllocatedSize(JNIEnv* env, jobject clazz, jlong renderNodePtr) {
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
     return renderNode->getAllocatedSize();
 }
-
+// 创建一个 RenderNode
 static jlong android_view_RenderNode_create(JNIEnv* env, jobject, jstring name) {
     RenderNode* renderNode = new RenderNode();
     renderNode->incStrong(0);
@@ -75,6 +75,7 @@ static jlong android_view_RenderNode_getNativeFinalizer(JNIEnv* env,
     return static_cast<jlong>(reinterpret_cast<uintptr_t>(&releaseRenderNode));
 }
 
+// RenderNode discardDisplayList 丢弃 DisplayList 绘制的 list
 static void android_view_RenderNode_discardDisplayList(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr) {
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
     renderNode->discardStagingDisplayList();
@@ -97,12 +98,12 @@ static jboolean android_view_RenderNode_setLayerPaint(CRITICAL_JNI_PARAMS_COMMA 
     Paint* paint = reinterpret_cast<Paint*>(paintPtr);
     return SET_AND_DIRTY(mutateLayerProperties().setFromPaint, paint, RenderNode::GENERIC);
 }
-
+// RenderNode 设置 静态的 Matrix
 static jboolean android_view_RenderNode_setStaticMatrix(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr, jlong matrixPtr) {
     SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixPtr);
     return SET_AND_DIRTY(setStaticMatrix, matrix, RenderNode::GENERIC);
 }
-
+// RenderNode 设置静态的 Matrix
 static jboolean android_view_RenderNode_setAnimationMatrix(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr, jlong matrixPtr) {
     SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixPtr);
     return SET_AND_DIRTY(setAnimationMatrix, matrix, RenderNode::GENERIC);
@@ -230,11 +231,12 @@ static jboolean android_view_RenderNode_setRevealClip(CRITICAL_JNI_PARAMS_COMMA 
     renderNode->setPropertyFieldsDirty(RenderNode::GENERIC);
     return true;
 }
-
+// RenderNode 设置Alpha 透明色
 static jboolean android_view_RenderNode_setAlpha(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr, float alpha) {
     return SET_AND_DIRTY(setAlpha, alpha, RenderNode::ALPHA);
 }
 
+// renderNode 设置 RenderEffect 渲染的特效
 static jboolean android_view_RenderNode_setRenderEffect(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr,
         jlong renderEffectPtr) {
     SkImageFilter* imageFilter = reinterpret_cast<SkImageFilter*>(renderEffectPtr);
@@ -342,7 +344,7 @@ static jint android_view_RenderNode_getRight(CRITICAL_JNI_PARAMS_COMMA jlong ren
 static jint android_view_RenderNode_getBottom(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr) {
     return reinterpret_cast<RenderNode*>(renderNodePtr)->stagingProperties().getBottom();
 }
-
+// 设置 RenderNode 的 left top right bottom 位置
 static jboolean android_view_RenderNode_setLeftTopRightBottom(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr,
         int left, int top, int right, int bottom) {
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
@@ -369,7 +371,7 @@ static jboolean android_view_RenderNode_hasOverlappingRendering(CRITICAL_JNI_PAR
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
     return renderNode->stagingProperties().hasOverlappingRendering();
 }
-
+// 设置 RenderNode 获取 AnimationMatrix 动画的旋转 Matrix 值
 static jboolean android_view_RenderNode_getAnimationMatrix(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr, jlong outMatrixPtr) {
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
     SkMatrix* outMatrix = reinterpret_cast<SkMatrix*>(outMatrixPtr);
@@ -539,7 +541,7 @@ static void android_view_RenderNode_setIsTextureView(
 // ----------------------------------------------------------------------------
 // RenderProperties - Animations
 // ----------------------------------------------------------------------------
-
+// RenderNode 设置 Animation 动画
 static void android_view_RenderNode_addAnimator(JNIEnv* env, jobject clazz, jlong renderNodePtr,
         jlong animatorPtr) {
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
@@ -584,7 +586,7 @@ static void android_view_RenderNode_requestPositionUpdates(JNIEnv* env, jobject,
             jnienv()->DeleteGlobalRef(mListener);
             mListener = nullptr;
         }
-
+        // RenderNode positionUpdate 位置改变的回调函数
         virtual void onPositionUpdated(RenderNode& node, const TreeInfo& info) override {
             if (CC_UNLIKELY(!mListener || !info.updateWindowPositions)) return;
 
@@ -610,7 +612,7 @@ static void android_view_RenderNode_requestPositionUpdates(JNIEnv* env, jobject,
             bool useStretchShader =
                     Properties::getStretchEffectBehavior() != StretchEffectBehavior::UniformScale;
             // Compute the transform bounds first before calculating the stretch
-            uirenderer::Rect bounds(props.getWidth(), props.getHeight());
+            uirenderer::Rect bounds(props.getWidth(), props.getHeight()); // 获取 uirenderer Rect 位置
             transform.mapRect(bounds);
 
             bool hasStretch = useStretchShader && info.stretchEffectCount;
@@ -701,7 +703,7 @@ static void android_view_RenderNode_requestPositionUpdates(JNIEnv* env, jobject,
             }
             return env;
         }
-
+        // 获取拉伸特效
         void handleStretchEffect(const TreeInfo& info, uirenderer::Rect& targetBounds) {
             // Search up to find the nearest stretcheffect parent
             const DamageAccumulator::StretchResult result =
