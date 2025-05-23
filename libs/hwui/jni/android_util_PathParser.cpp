@@ -90,7 +90,7 @@ static void setPathData(JNIEnv*, jobject, jlong outPathDataPtr, jlong fromPathDa
     PathData* outPathData = reinterpret_cast<PathData*>(outPathDataPtr);
     *outPathData = *fromPathData;
 }
-
+// set SkPathFromPathData 从 PathData 设置 SkPath
 static void setSkPathFromPathData(JNIEnv*, jobject, jlong outPathPtr, jlong pathDataPtr) {
     PathData* pathData = reinterpret_cast<PathData*>(pathDataPtr);
     SkPath* skPath = reinterpret_cast<SkPath*>(outPathPtr);
