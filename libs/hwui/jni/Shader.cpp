@@ -59,7 +59,7 @@ static SkGainmapInfo sNoOpGainmap = {
         .fDisplayRatioSdr = 1.f,
         .fDisplayRatioHdr = 1.f,
 };
-
+// BitmapShader 着色器构造函数
 static jlong BitmapShader_constructor(JNIEnv* env, jobject o, jlong matrixPtr, jlong bitmapHandle,
                                       jint tileModeX, jint tileModeY, jint maxAniso, bool filter,
                                       bool isDirectSampled, jlong overrideGainmapPtr) {
