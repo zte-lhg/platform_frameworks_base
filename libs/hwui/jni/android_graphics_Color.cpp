@@ -32,7 +32,7 @@ static void Color_RGBToHSV(JNIEnv* env, jobject, jint red, jint green, jint blue
         values[i] = SkScalarToFloat(hsv[i]);
     }
 }
-
+// 颜色空间转换
 static jint Color_HSVToColor(JNIEnv* env, jobject, jint alpha, jfloatArray hsvArray)
 {
     AutoJavaFloatArray  autoHSV(env, hsvArray, 3);
