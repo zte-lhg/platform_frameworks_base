@@ -199,7 +199,7 @@ static jstring Region_toString(JNIEnv* env, jobject clazz, jlong regionHandle) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// 从 Parcel 当中创建 Region 区域
 static jlong Region_createFromParcel(JNIEnv* env, jobject clazz, jobject parcel)
 {
 #ifdef __ANDROID__ // Layoutlib does not support parcel
@@ -227,7 +227,7 @@ static jlong Region_createFromParcel(JNIEnv* env, jobject clazz, jobject parcel)
     return 0;
 #endif
 }
-
+// 将 Region 写入到 Parcel
 static jboolean Region_writeToParcel(JNIEnv* env, jobject clazz, jlong regionHandle, jobject parcel)
 {
 #ifdef __ANDROID__ // Layoutlib does not support parcel
