@@ -59,6 +59,7 @@ static jlong createOvershootInterpolator(JNIEnv* env, jobject clazz, jfloat tens
     return reinterpret_cast<jlong>(new OvershootInterpolator(tension));
 }
 
+// 创建 Path Interpolator 解析器
 static jlong createPathInterpolator(JNIEnv* env, jobject clazz, jfloatArray jX, jfloatArray jY) {
     jsize lenX = env->GetArrayLength(jX);
     jsize lenY = env->GetArrayLength(jY);
