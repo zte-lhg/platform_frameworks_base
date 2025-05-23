@@ -37,6 +37,7 @@ static jlong make(JNIEnv* env, jobject, jlong meshSpec, jint mode, jobject verte
     if (env->ExceptionCheck()) {
         return 0;
     }
+    // MakeLTRB 设置 Mesh 的位置
     auto skRect = SkRect::MakeLTRB(left, top, right, bottom);
     auto meshPtr = new Mesh(skMeshSpec, static_cast<SkMesh::Mode>(mode), std::move(buffer),
                             vertexCount, vertexOffset, skRect);
