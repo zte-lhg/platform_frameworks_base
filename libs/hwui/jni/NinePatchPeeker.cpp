@@ -47,7 +47,7 @@ bool NinePatchPeeker::readChunk(const char tag[], const void* data, size_t lengt
     }
     return true;    // keep on decoding
 }
-
+/// scaleDivRange 扩大 Div 范围
 static void scaleDivRange(int32_t* divs, int count, float scale, int maxValue) {
     for (int i = 0; i < count; i++) {
         divs[i] = int32_t(divs[i] * scale + 0.5f);
