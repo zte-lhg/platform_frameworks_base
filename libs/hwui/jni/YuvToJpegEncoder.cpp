@@ -96,7 +96,7 @@ skstream_destination_mgr::skstream_destination_mgr(SkWStream* stream)
     this->empty_output_buffer = sk_empty_output_buffer;
     this->term_destination = sk_term_destination;
 }
-
+// YUV to JpegEncoder 编码
 bool YuvToJpegEncoder::encode(SkWStream* stream, void* inYuv, int width,
         int height, int* offsets, int jpegQuality) {
     jpeg_compress_struct      cinfo;
@@ -148,6 +148,7 @@ Yuv420SpToJpegEncoder::Yuv420SpToJpegEncoder(int* strides) :
     fNumPlanes = 2;
 }
 
+// YUV420ToJpegEncoder 压缩格式
 void Yuv420SpToJpegEncoder::compress(jpeg_compress_struct* cinfo,
         uint8_t* yuv, int* offsets) {
     ALOGD("onFlyCompress");
@@ -330,7 +331,7 @@ ultrahdr_transfer_function P010Yuv420ToJpegREncoder::findHdrTransferFunction(JNI
 
     return ultrahdr_transfer_function::ULTRAHDR_TF_UNSPECIFIED;
 }
-
+// JpegREncoder encode 编码
 bool P010Yuv420ToJpegREncoder::encode(JNIEnv* env,
         SkWStream* stream, void* hdr, int hdrColorSpace, void* sdr, int sdrColorSpace,
         int width, int height, int jpegQuality, ScopedByteArrayRO* jExif,
@@ -415,7 +416,7 @@ bool P010Yuv420ToJpegREncoder::encode(JNIEnv* env,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
+// 将一张 YUV 图片编码成 jpeg 格式
 static jboolean YuvImage_compressToJpeg(JNIEnv* env, jobject, jbyteArray inYuv,
         jint format, jint width, jint height, jintArray offsets,
         jintArray strides, jint jpegQuality, jobject jstream,
