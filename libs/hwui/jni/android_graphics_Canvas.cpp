@@ -198,7 +198,7 @@ static jboolean getClipBounds(JNIEnv* env, jobject, jlong canvasHandle, jobject 
     (void)GraphicsJNI::irect_to_jrect(ir, env, bounds);
     return result ? JNI_TRUE : JNI_FALSE;
 }
-
+// 剔除指定的 Rect
 static jboolean quickRejectRect(CRITICAL_JNI_PARAMS_COMMA jlong canvasHandle,
                                 jfloat left, jfloat top, jfloat right, jfloat bottom) {
     bool result = get_canvas(canvasHandle)->quickRejectRect(left, top, right, bottom);
@@ -264,7 +264,7 @@ static jboolean clipPath(CRITICAL_JNI_PARAMS_COMMA jlong canvasHandle, jlong pat
     }
     return nonEmptyClip ? JNI_TRUE : JNI_FALSE;
 }
-
+// Clip 指定的着色器
 static void clipShader(CRITICAL_JNI_PARAMS_COMMA jlong canvasHandle, jlong shaderHandle,
                        jint opHandle) {
     SkRegion::Op rgnOp = static_cast<SkRegion::Op>(opHandle);
@@ -281,7 +281,7 @@ static void clipShader(CRITICAL_JNI_PARAMS_COMMA jlong canvasHandle, jlong shade
             break;
     }
 }
-
+// drawColor 绘制颜色
 static void drawColor(JNIEnv* env, jobject, jlong canvasHandle, jint color, jint modeHandle) {
     SkBlendMode mode = static_cast<SkBlendMode>(modeHandle);
     get_canvas(canvasHandle)->drawColor(color, mode);
@@ -310,6 +310,7 @@ static void drawPoint(JNIEnv*, jobject, jlong canvasHandle, jfloat x, jfloat y,
     get_canvas(canvasHandle)->drawPoint(x, y, *paint);
 }
 
+// drawPoints 绘制指定的 points 像素点
 static void drawPoints(JNIEnv* env, jobject, jlong canvasHandle, jfloatArray jptsArray,
                        jint offset, jint count, jlong paintHandle) {
     NPE_CHECK_RETURN_VOID(env, jptsArray);
@@ -392,7 +393,7 @@ static void drawRoundRect(JNIEnv* env, jobject, jlong canvasHandle, jfloat left,
     const Paint* paint = reinterpret_cast<Paint*>(paintHandle);
     get_canvas(canvasHandle)->drawRoundRect(left, top, right, bottom, rx, ry, *paint);
 }
-
+// drawCircle 绘制圆形
 static void drawCircle(JNIEnv* env, jobject, jlong canvasHandle, jfloat cx, jfloat cy,
                        jfloat radius, jlong paintHandle) {
     const Paint* paint = reinterpret_cast<Paint*>(paintHandle);
@@ -478,7 +479,7 @@ static void drawMesh(JNIEnv* env, jobject, jlong canvasHandle, jlong meshHandle,
     Paint* paint = reinterpret_cast<Paint*>(paintHandle);
     get_canvas(canvasHandle)->drawMesh(*mesh, SkBlender::Mode(blendMode), *paint);
 }
-
+// 绘制九宫图
 static void drawNinePatch(JNIEnv* env, jobject, jlong canvasHandle, jlong bitmapHandle,
         jlong chunkHandle, jfloat left, jfloat top, jfloat right, jfloat bottom,
         jlong paintHandle, jint dstDensity, jint srcDensity) {
@@ -509,7 +510,7 @@ static void drawNinePatch(JNIEnv* env, jobject, jlong canvasHandle, jlong bitmap
         canvas->restore();
     }
 }
-
+// 绘制 Bitmap 部分逻辑
 static void drawBitmap(JNIEnv* env, jobject, jlong canvasHandle, jlong bitmapHandle,
                        jfloat left, jfloat top, jlong paintHandle, jint canvasDensity,
                        jint screenDensity, jint bitmapDensity) {
@@ -544,7 +545,7 @@ static void drawBitmap(JNIEnv* env, jobject, jlong canvasHandle, jlong bitmapHan
         canvas->restore();
     }
 }
-
+// 绘制 bitmapMatrix 矩阵
 static void drawBitmapMatrix(JNIEnv* env, jobject, jlong canvasHandle, jlong bitmapHandle,
                              jlong matrixHandle, jlong paintHandle) {
     const SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixHandle);
@@ -552,7 +553,7 @@ static void drawBitmapMatrix(JNIEnv* env, jobject, jlong canvasHandle, jlong bit
     Bitmap& bitmap = android::bitmap::toBitmap(bitmapHandle);
     get_canvas(canvasHandle)->drawBitmap(bitmap, *matrix, paint);
 }
-
+// 将 bitmap 绘制到指定的 Rect 区域
 static void drawBitmapRect(JNIEnv* env, jobject, jlong canvasHandle, jlong bitmapHandle,
                            float srcLeft, float srcTop, float srcRight, float srcBottom,
                            float dstLeft, float dstTop, float dstRight, float dstBottom,
@@ -586,16 +587,18 @@ static void drawBitmapArray(JNIEnv* env, jobject, jlong canvasHandle,
                            kPremul_SkAlphaType);
     SkBitmap bitmap;
     bitmap.setInfo(info);
+    // 首先创建一个 heapbitmap
     sk_sp<Bitmap> androidBitmap = Bitmap::allocateHeapBitmap(&bitmap);
     if (!androidBitmap) {
         return;
     }
-
+    // 向 bitmap 中设置 Pixels 像素值
     if (!GraphicsJNI::SetPixels(env, jcolors, offset, stride, 0, 0, width, height, &bitmap)) {
         return;
     }
 
     const Paint* paint = reinterpret_cast<Paint*>(paintHandle);
+    // 绘制 bitmap
     get_canvas(canvasHandle)->drawBitmap(*androidBitmap, x, y, paint);
 }
 
@@ -615,6 +618,7 @@ static void drawBitmapMesh(JNIEnv* env, jobject, jlong canvasHandle, jlong bitma
 
     const Paint* paint = reinterpret_cast<Paint*>(paintHandle);
     Bitmap& bitmap = android::bitmap::toBitmap(bitmapHandle);
+    // 绘制 bitmap 的 Mesh 网状图
     get_canvas(canvasHandle)->drawBitmapMesh(bitmap, meshWidth, meshHeight,
                                              vertA.ptr() + vertIndex*2,
                                              colorA.ptr() + colorIndex, paint);
@@ -690,6 +694,7 @@ static void drawTextRunChars(JNIEnv* env, jobject, jlong canvasHandle, jcharArra
     ScopedCharArrayRO text(env, charArray);
     Paint* paint = reinterpret_cast<Paint*>(paintHandle);
     const Typeface* typeface = paint->getAndroidTypeface();
+    // get_canvas drawText 绘制 Text 文字
     get_canvas(canvasHandle)->drawText(
             text.get(), text.size(),  // text buffer
             index, count,  // draw range
@@ -757,6 +762,7 @@ static void drawTextOnPathString(JNIEnv* env, jobject, jlong canvasHandle, jstri
     env->ReleaseStringChars(text, jchars);
 }
 
+// 设置 Paint 的 过滤色
 static void setPaintFilter(CRITICAL_JNI_PARAMS_COMMA jlong canvasHandle, jlong filterHandle) {
     PaintFilter* paintFilter = reinterpret_cast<PaintFilter*>(filterHandle);
     get_canvas(canvasHandle)->setPaintFilter(sk_ref_sp(paintFilter));
