@@ -47,7 +47,7 @@ HardwareRendererObserver::~HardwareRendererObserver() {
     JNIEnv* env = getenv(mVm);
     env->DeleteGlobalRef(mObserver);
 }
-
+// 获取下一帧 Buffer
 bool HardwareRendererObserver::getNextBuffer(JNIEnv* env, jlongArray metrics, int* dropCount) {
     jsize bufferSize = env->GetArrayLength(reinterpret_cast<jarray>(metrics));
     LOG_ALWAYS_FATAL_IF(bufferSize != HardwareRendererObserver::kBufferSize,
@@ -65,6 +65,7 @@ bool HardwareRendererObserver::getNextBuffer(JNIEnv* env, jlongArray metrics, in
     return false;
 }
 
+// HardwareRendererObserver notify 通知Renderer 更新
 void HardwareRendererObserver::notify(const int64_t* stats) {
     if (!mKeepListening) return;
 
