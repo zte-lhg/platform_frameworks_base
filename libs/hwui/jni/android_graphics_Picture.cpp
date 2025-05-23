@@ -29,7 +29,7 @@ static jlong android_graphics_Picture_newPicture(JNIEnv* env, jobject, jlong src
     const Picture* src = reinterpret_cast<Picture*>(srcHandle);
     return reinterpret_cast<jlong>(new Picture(src));
 }
-
+// graphics picture deserialize 反串行化
 static jlong android_graphics_Picture_deserialize(JNIEnv* env, jobject, jobject jstream,
                                                   jbyteArray jstorage) {
     Picture* picture = NULL;
@@ -46,7 +46,7 @@ static void android_graphics_Picture_killPicture(JNIEnv* env, jobject, jlong pic
     SkASSERT(picture);
     delete picture;
 }
-
+// Pictire draw 绘制
 static void android_graphics_Picture_draw(JNIEnv* env, jobject, jlong canvasHandle,
                                           jlong pictureHandle) {
     Canvas* canvas = reinterpret_cast<Canvas*>(canvasHandle);
@@ -55,7 +55,7 @@ static void android_graphics_Picture_draw(JNIEnv* env, jobject, jlong canvasHand
     SkASSERT(picture);
     picture->draw(canvas);
 }
-
+// Picture serialize 图片串行化
 static jboolean android_graphics_Picture_serialize(JNIEnv* env, jobject, jlong pictureHandle,
                                                    jobject jstream, jbyteArray jstorage) {
     Picture* picture = reinterpret_cast<Picture*>(pictureHandle);
@@ -79,13 +79,14 @@ static jint android_graphics_Picture_getHeight(JNIEnv* env, jobject, jlong pictu
     return static_cast<jint>(pict->height());
 }
 
+// 绘制录制 Picture beginRecording 绘制
 static jlong android_graphics_Picture_beginRecording(JNIEnv* env, jobject, jlong pictHandle,
                                                      jint w, jint h) {
     Picture* pict = reinterpret_cast<Picture*>(pictHandle);
     Canvas* canvas = pict->beginRecording(w, h);
     return reinterpret_cast<jlong>(canvas);
 }
-
+// 结束 Picture 绘制
 static void android_graphics_Picture_endRecording(JNIEnv* env, jobject, jlong pictHandle) {
     Picture* pict = reinterpret_cast<Picture*>(pictHandle);
     pict->endRecording();
