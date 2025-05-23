@@ -66,7 +66,7 @@ int Picture::width() const {
 int Picture::height() const {
     return mHeight;
 }
-
+// 从 SkStream 流当中构造 Picture
 Picture* Picture::CreateFromStream(SkStream* stream) {
     Picture* newPict = new Picture;
 
@@ -82,6 +82,7 @@ Picture* Picture::CreateFromStream(SkStream* stream) {
     return newPict;
 }
 
+// Picture serial 串行化
 void Picture::serialize(SkWStream* stream) const {
     if (NULL != mRecorder.get()) {
         this->makePartialCopy()->serialize(stream);
