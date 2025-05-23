@@ -125,6 +125,7 @@ static jlong ColorSpace_getNativeFinalizer(JNIEnv*, jobject) {
     return static_cast<jlong>(reinterpret_cast<uintptr_t>(&unref_colorSpace));
 }
 
+// jni 层创建 colorSpace 函数
 static jlong ColorSpace_creator(JNIEnv* env, jobject, jfloat a, jfloat b, jfloat c,
         jfloat d, jfloat e, jfloat f, jfloat g, jfloatArray xyzD50) {
     skcms_TransferFunction p;
@@ -146,7 +147,7 @@ static const JNINativeMethod gColorSpaceRgbMethods[] = {
 };
 
 namespace android {
-
+// graphics ColorSpace 注册
 int register_android_graphics_ColorSpace(JNIEnv* env) {
     return android::RegisterMethodsOrDie(env, "android/graphics/ColorSpace$Rgb$Native",
                                          gColorSpaceRgbMethods, NELEM(gColorSpaceRgbMethods));
