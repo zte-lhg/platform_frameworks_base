@@ -70,6 +70,7 @@ private:
 
 static jlong android_view_DisplayListCanvas_createDisplayListCanvas(CRITICAL_JNI_PARAMS_COMMA jlong renderNodePtr,
         jint width, jint height) {
+    // 创建一个 DisplayListCanvas
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
     return reinterpret_cast<jlong>(Canvas::create_recording_canvas(width, height, renderNode));
 }
@@ -90,7 +91,7 @@ static void android_view_DisplayListCanvas_enableZ(CRITICAL_JNI_PARAMS_COMMA jlo
     Canvas* canvas = reinterpret_cast<Canvas*>(canvasPtr);
     canvas->enableZ(reorderEnable);
 }
-
+// finishRecording 结束 DisplayListCanvas 绘制
 static void android_view_DisplayListCanvas_finishRecording(
         CRITICAL_JNI_PARAMS_COMMA jlong canvasPtr, jlong renderNodePtr) {
     Canvas* canvas = reinterpret_cast<Canvas*>(canvasPtr);
@@ -101,7 +102,7 @@ static void android_view_DisplayListCanvas_finishRecording(
 static void android_view_DisplayListCanvas_drawRenderNode(CRITICAL_JNI_PARAMS_COMMA jlong canvasPtr, jlong renderNodePtr) {
     Canvas* canvas = reinterpret_cast<Canvas*>(canvasPtr);
     RenderNode* renderNode = reinterpret_cast<RenderNode*>(renderNodePtr);
-    canvas->drawRenderNode(renderNode);
+    canvas->drawRenderNode(renderNode);  // 绘制 renderNode
 }
 
 static void android_view_DisplayListCanvas_drawTextureLayer(CRITICAL_JNI_PARAMS_COMMA jlong canvasPtr, jlong layerPtr) {
