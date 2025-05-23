@@ -53,26 +53,26 @@ static RenderCallback createRenderCallback(JNIEnv* env, jobject releaseCallback)
                 reinterpret_cast<jint>(fd.release()), reinterpret_cast<jint>(status));
     };
 }
-
+// HardwareRenderer 创建 RootNode
 static long android_graphics_HardwareBufferRenderer_createRootNode(JNIEnv* env, jobject) {
     auto* node = new RootRenderNode(std::make_unique<JvmErrorReporter>(env));
     node->incStrong(nullptr);
     node->setName("RootRenderNode");
     return reinterpret_cast<jlong>(node);
 }
-
+// HardwareBufferRenderer 销毁 RootNode
 static void android_graphics_hardwareBufferRenderer_destroyRootNode(JNIEnv*, jobject,
                                                                     jlong renderNodePtr) {
     auto* node = reinterpret_cast<RootRenderNode*>(renderNodePtr);
     node->destroy();
 }
-
+// HardwareBufferRenderer create 创建 hardwareBuffer
 static long android_graphics_HardwareBufferRenderer_create(JNIEnv* env, jobject, jobject buffer,
                                                            jlong renderNodePtr) {
     auto* hardwareBuffer = HardwareBufferHelpers::AHardwareBuffer_fromHardwareBuffer(env, buffer);
     auto* rootRenderNode = reinterpret_cast<RootRenderNode*>(renderNodePtr);
     ContextFactoryImpl factory(rootRenderNode);
-    auto* proxy = new RenderProxy(false, rootRenderNode, &factory);
+    auto* proxy = new RenderProxy(false, rootRenderNode, &factory);   // 创建一个 RenderRroxy
     proxy->setHardwareBuffer(hardwareBuffer);
     return (jlong)proxy;
 }
