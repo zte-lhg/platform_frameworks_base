@@ -10,6 +10,7 @@ using namespace android;
 static jmethodID gByteBuffer_getMethodID;
 static jmethodID gByteBuffer_setPositionMethodID;
 
+// 创建一个将 ByteBufferStream 当成 Stream 流的转换类
 class ByteBufferStream : public SkStreamAsset {
 private:
     ByteBufferStream(JavaVM* jvm, jobject jbyteBuffer, size_t initialPosition, size_t length,
