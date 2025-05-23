@@ -84,7 +84,7 @@ bool AssetStreamAdaptor::move(long offset) {
 
     return true;
 }
-
+// AssetStreamAdapter read 从 Assets 当中读取 Stream 到 buffer 当中
 size_t AssetStreamAdaptor::read(void* buffer, size_t size) {
     ssize_t amount;
 
