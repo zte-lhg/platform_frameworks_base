@@ -40,7 +40,7 @@ void android::uirenderer::HardwareBufferHelpers::init() {
                         " Failed to find required symbol AHardwareBuffer_toHardwareBuffer!");
 #endif
 }
-
+// 从 HardwareBuffer 构造一个 AHardwareBuffer
 AHardwareBuffer* android::uirenderer::HardwareBufferHelpers::AHardwareBuffer_fromHardwareBuffer(
         JNIEnv* env, jobject hardwarebuffer) {
 #ifdef __ANDROID__
