@@ -41,6 +41,7 @@ static JNIEnv* getEnv(JavaVM* vm) {
     return env;
 }
 
+// 创建向量绘制动画
 static AnimationListener* createAnimationListener(JNIEnv* env, jobject finishListener, jint id) {
     class AnimationListenerBridge : public AnimationListener {
     public:
