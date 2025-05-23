@@ -71,7 +71,7 @@ static int getCreateFlags(const sk_sp<Bitmap>& bitmap) {
     }
     return flags;
 }
-
+// 从 Bitmap 当中构造一个 GainMap
 jobject Gainmap_extractFromBitmap(JNIEnv* env, const Bitmap& bitmap) {
     auto gainmap = bitmap.gainmap();
     jobject jGainmapImage;
