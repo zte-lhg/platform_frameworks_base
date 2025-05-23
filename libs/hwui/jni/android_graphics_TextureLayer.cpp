@@ -42,14 +42,14 @@ static void TextureLayer_setLayerPaint(JNIEnv* env, jobject clazz,
         layer->setPaint(paint);
     }
 }
-
+// TextureLayer 设置 Transform 旋转方向
 static void TextureLayer_setTransform(JNIEnv* env, jobject clazz,
         jlong layerUpdaterPtr, jlong matrixPtr) {
     DeferredLayerUpdater* layer = reinterpret_cast<DeferredLayerUpdater*>(layerUpdaterPtr);
     SkMatrix* matrix = reinterpret_cast<SkMatrix*>(matrixPtr);
     layer->setTransform(matrix);
 }
-
+// TextureLayer 纹理层设置 SurfaceTexture 贴图
 static void TextureLayer_setSurfaceTexture(JNIEnv* env, jobject clazz,
         jlong layerUpdaterPtr, jobject surface) {
     DeferredLayerUpdater* layer = reinterpret_cast<DeferredLayerUpdater*>(layerUpdaterPtr);
