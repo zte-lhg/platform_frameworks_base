@@ -25,6 +25,7 @@ namespace android {
 using namespace uirenderer;
 using namespace uirenderer::VectorDrawable;
 
+// 创建一个 VectorDrawable 矢量图
 /**
  * VectorDrawable's pre-draw construction.
  */
@@ -33,14 +34,14 @@ static jlong createTree(JNIEnv*, jobject, jlong groupPtr) {
     VectorDrawable::Tree* tree = new VectorDrawable::Tree(rootGroup);
     return reinterpret_cast<jlong>(tree);
 }
-
+// 从一个矢量图拷贝创建另外一个 矢量图
 static jlong createTreeFromCopy(JNIEnv*, jobject, jlong treePtr, jlong groupPtr) {
     VectorDrawable::Group* rootGroup = reinterpret_cast<VectorDrawable::Group*>(groupPtr);
     VectorDrawable::Tree* treeToCopy = reinterpret_cast<VectorDrawable::Tree*>(treePtr);
     VectorDrawable::Tree* tree = new VectorDrawable::Tree(treeToCopy, rootGroup);
     return reinterpret_cast<jlong>(tree);
 }
-
+// 创建一个 FullPath
 static jlong createEmptyFullPath(JNIEnv*, jobject) {
     VectorDrawable::FullPath* newPath = new VectorDrawable::FullPath();
     return reinterpret_cast<jlong>(newPath);
@@ -69,13 +70,14 @@ static jlong createEmptyGroup(JNIEnv*, jobject) {
     VectorDrawable::Group* newGroup = new VectorDrawable::Group();
     return reinterpret_cast<jlong>(newGroup);
 }
-
+// 创建一个 GroupPtr
 static jlong createGroup(JNIEnv*, jobject, jlong srcGroupPtr) {
     VectorDrawable::Group* srcGroup = reinterpret_cast<VectorDrawable::Group*>(srcGroupPtr);
     VectorDrawable::Group* newGroup = new VectorDrawable::Group(*srcGroup);
     return reinterpret_cast<jlong>(newGroup);
 }
 
+// 设置 renderNode 的名字
 static void setNodeName(JNIEnv* env, jobject, jlong nodePtr, jstring nameStr) {
     VectorDrawable::Node* node = reinterpret_cast<VectorDrawable::Node*>(nodePtr);
     const char* nodeName = env->GetStringUTFChars(nameStr, NULL);
@@ -88,7 +90,7 @@ static void addChild(JNIEnv*, jobject, jlong groupPtr, jlong childPtr) {
     VectorDrawable::Node* child = reinterpret_cast<VectorDrawable::Node*>(childPtr);
     group->addChild(child);
 }
-
+// 设置是否允许 Caching
 static void setAllowCaching(JNIEnv*, jobject, jlong treePtr, jboolean allowCaching) {
     VectorDrawable::Tree* tree = reinterpret_cast<VectorDrawable::Tree*>(treePtr);
     tree->setAllowCaching(allowCaching);
@@ -107,6 +109,7 @@ static jint draw(JNIEnv* env, jobject, jlong treePtr, jlong canvasPtr,
     VectorDrawable::Tree* tree = reinterpret_cast<VectorDrawable::Tree*>(treePtr);
     Canvas* canvas = reinterpret_cast<Canvas*>(canvasPtr);
     SkRect rect;
+    // 绘制矢量图
     GraphicsJNI::jrect_to_rect(env, jrect, &rect);
     auto colorFilter = ColorFilter::fromJava(colorFilterPtr);
     auto skColorFilter = colorFilter != nullptr ? colorFilter->getInstance() : nullptr;
@@ -121,7 +124,7 @@ static void setTreeViewportSize(JNIEnv*, jobject, jlong treePtr,
     VectorDrawable::Tree* tree = reinterpret_cast<VectorDrawable::Tree*>(treePtr);
     tree->mutateStagingProperties()->setViewportSize(viewportWidth, viewportHeight);
 }
-
+// 设置 RootAlpha alpha 值
 static jboolean setRootAlpha(JNIEnv*, jobject, jlong treePtr, jfloat alpha) {
     VectorDrawable::Tree* tree = reinterpret_cast<VectorDrawable::Tree*>(treePtr);
     return tree->mutateStagingProperties()->setRootAlpha(alpha);
@@ -217,6 +220,7 @@ static void setPivotX(JNIEnv*, jobject, jlong groupPtr, jfloat pivotX) {
     group->mutateStagingProperties()->setPivotX(pivotX);
 }
 
+// 获取 PivotY 与 setPivotY 这种 Y 坐标
 static jfloat getPivotY(JNIEnv*, jobject, jlong groupPtr) {
     VectorDrawable::Group* group = reinterpret_cast<VectorDrawable::Group*>(groupPtr);
     return group->stagingProperties()->getPivotY();
@@ -288,11 +292,13 @@ static jint getStrokeColor(JNIEnv*, jobject, jlong fullPathPtr) {
     return fullPath->stagingProperties()->getStrokeColor();
 }
 
+// 设置画笔的 Color 颜色
 static void setStrokeColor(JNIEnv*, jobject, jlong fullPathPtr, jint strokeColor) {
     VectorDrawable::FullPath* fullPath = reinterpret_cast<VectorDrawable::FullPath*>(fullPathPtr);
     fullPath->mutateStagingProperties()->setStrokeColor(strokeColor);
 }
 
+// 设置画笔的 Alpha 值
 static jfloat getStrokeAlpha(JNIEnv*, jobject, jlong fullPathPtr) {
     VectorDrawable::FullPath* fullPath = reinterpret_cast<VectorDrawable::FullPath*>(fullPathPtr);
     return fullPath->stagingProperties()->getStrokeAlpha();
