@@ -65,6 +65,7 @@ float getTargetHdrSdrRatio(const SkColorSpace* destColorspace) {
     return 1.f;
 }
 
+// 绘制 GainmapBitmap 图
 void DrawGainmapBitmap(SkCanvas* c, const sk_sp<const SkImage>& image, const SkRect& src,
                        const SkRect& dst, const SkSamplingOptions& sampling, const SkPaint* paint,
                        SkCanvas::SrcRectConstraint constraint,
