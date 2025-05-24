@@ -117,7 +117,7 @@ void VkFunctorDrawable::onDraw(SkCanvas* canvas) {
                             "VkFunctorDrawable::onDraw() should not be called with a GPU canvas!");
 
         // This will invoke onSnapGpuDrawHandler and regular draw flow.
-        gpuCanvas->drawDrawable(this);
+        gpuCanvas->drawDrawable(this);  // gpuCanvas drawDrawable 开始绘制
     }
 }
 
