@@ -126,7 +126,7 @@ private:
     const float mScale;
     const int mSize;
 };
-
+// 可回收的 PixelAllocator
 class RecyclingPixelAllocator : public SkBitmap::Allocator {
 public:
     RecyclingPixelAllocator(android::Bitmap* bitmap, unsigned int size)
@@ -295,7 +295,7 @@ static bool decodeGainmap(std::unique_ptr<SkAndroidCodec> codec, const SkGainmap
 
     return true;
 }
-
+// DoDecode 解码函数
 static jobject doDecode(JNIEnv* env, std::unique_ptr<SkStreamRewindable> stream,
                         jobject padding, jobject options, jlong inBitmapHandle,
                         jlong colorSpaceHandle) {
