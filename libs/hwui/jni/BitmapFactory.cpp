@@ -102,12 +102,13 @@ jstring getMimeTypeAsJavaString(JNIEnv* env, SkEncodedImageFormat format) {
     return jstr;
 }
 
+// 堆内存分配器
 class ScaleCheckingAllocator : public SkBitmap::HeapAllocator {
 public:
     ScaleCheckingAllocator(float scale, int size)
             : mScale(scale), mSize(size) {
     }
-
+    // allocPixelRef 分配 Pixel
     virtual bool allocPixelRef(SkBitmap* bitmap) {
         // accounts for scale in final allocation, using eventual size and config
         const int bytesPerPixel = SkColorTypeBytesPerPixel(bitmap->colorType());
@@ -232,7 +233,7 @@ static bool decodeGainmap(std::unique_ptr<SkAndroidCodec> codec, const SkGainmap
             return false;
         }
     } else {
-        nativeBitmap = android::Bitmap::allocateHeapBitmap(&decodeBitmap);
+        nativeBitmap = android::Bitmap::allocateHeapBitmap(&decodeBitmap);  // allocateHeapBitmap 分配堆 Bitmap
         if (!nativeBitmap) {
             ALOGE("OOM allocating gainmap pixels.");
             return false;
@@ -641,7 +642,7 @@ static jobject doDecode(JNIEnv* env, std::unique_ptr<SkStreamRewindable> stream,
     if (isPremultiplied) bitmapCreateFlags |= android::bitmap::kBitmapCreateFlag_Premultiplied;
 
     if (isHardware) {
-        sk_sp<Bitmap> hardwareBitmap = Bitmap::allocateHardwareBitmap(outputBitmap);
+        sk_sp<Bitmap> hardwareBitmap = Bitmap::allocateHardwareBitmap(outputBitmap);  // allocate HardwareBitmap
         if (!hardwareBitmap.get()) {
             return nullObjectReturn("Failed to allocate a hardware bitmap");
         }
