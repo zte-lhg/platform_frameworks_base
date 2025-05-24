@@ -30,6 +30,7 @@ namespace android {
 namespace uirenderer {
 namespace skiapipeline {
 
+// SkiaVulkanPipeline 继承 SkiaGpuPipeline 与 IGpuContextCallback
 class SkiaVulkanPipeline : public SkiaGpuPipeline, public IGpuContextCallback {
 public:
     explicit SkiaVulkanPipeline(renderthread::RenderThread& thread);
