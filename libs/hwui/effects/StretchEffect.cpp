@@ -25,7 +25,7 @@
 #include <memory>
 
 namespace android::uirenderer {
-
+// 拉伸特效
 static const SkString stretchShader = SkString(R"(
     uniform shader uContentTexture;
 
@@ -188,6 +188,7 @@ static const float ZERO = 0.f;
 static const float INTERPOLATION_STRENGTH_VALUE = 0.7f;
 static const char CONTENT_TEXTURE[] = "uContentTexture";
 
+// 获取 拉伸特效 shader 着色器
 sk_sp<SkShader> StretchEffect::getShader(float width, float height,
                                          const sk_sp<SkImage>& snapshotImage,
                                          const SkMatrix* matrix) const {
