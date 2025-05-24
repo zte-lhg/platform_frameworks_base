@@ -215,6 +215,7 @@ void RenderNode::pushLayerUpdate(TreeInfo& info) {
     info.canvasContext.markLayerInUse(this);
 }
 
+// Traverse down the drawTree 准备绘制一个 Frame
 /**
  * Traverse down the the draw tree to prepare for a frame.
  *
