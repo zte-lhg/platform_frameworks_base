@@ -31,7 +31,7 @@ void rasterizeCanvasBuffer(const CanvasOpBuffer& source, SkCanvas* destination) 
     // Push on beginning a RenderNode draw, pop on ending one
     std::vector<SkMatrix> globalMatrixStack;
     SkMatrix& currentGlobalTransform = globalMatrixStack.emplace_back(SkMatrix::I());
-
+    // 光珊化 绘制操作符
     source.for_each([&]<CanvasOpType T>(const CanvasOpContainer<T> * op) {
         if constexpr (CanvasOpTraits::can_draw<CanvasOp<T>>) {
             // Generic OP
