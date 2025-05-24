@@ -69,7 +69,7 @@ constexpr bool bitmap_ashmem_long_name() { return false; }
 #endif
 
 namespace android {
-
+// AHardwareBuffer 获取 allocateSize 大小
 #ifdef __ANDROID__
 static uint64_t AHardwareBuffer_getAllocationSize(AHardwareBuffer* aHardwareBuffer) {
     GraphicBuffer* buffer = AHardwareBuffer_to_GraphicBuffer(aHardwareBuffer);
@@ -113,7 +113,7 @@ static uint64_t AHardwareBuffer_getAllocationSize(AHardwareBuffer* aHardwareBuff
 //   2) the IDs are intentionally represented in decimal to make it easier to
 //   reason and associate with numbers shown in heap dump (mostly in decimal)
 //   and PIDs shown in different tools (mostly in decimal as well).
-uint64_t Bitmap::getId(PixelStorageType type) {
+uint64_t Bitmap::getId(PixelStorageType type) {  // 获取 bitmap 的 id 信息
     static std::atomic<uint64_t> idCounter{0};
     return (idCounter.fetch_add(1) % 1000000)
         + static_cast<uint64_t>(type) * 1000000
@@ -127,7 +127,7 @@ bool Bitmap::computeAllocationSize(size_t rowBytes, int height, size_t* size) {
 }
 
 typedef sk_sp<Bitmap> (*AllocPixelRef)(size_t allocSize, const SkImageInfo& info, size_t rowBytes);
-
+// allocateBitmap 获取 bitmap
 static sk_sp<Bitmap> allocateBitmap(SkBitmap* bitmap, AllocPixelRef alloc) {
     const SkImageInfo& info = bitmap->info();
     if (info.colorType() == kUnknown_SkColorType) {
@@ -190,7 +190,7 @@ sk_sp<Bitmap> Bitmap::allocateAshmemBitmap(size_t size, const SkImageInfo& info,
         close(fd);
         return nullptr;
     }
-    return sk_sp<Bitmap>(new Bitmap(addr, fd, size, info, rowBytes, id));
+    return sk_sp<Bitmap>(new Bitmap(addr, fd, size, info, rowBytes, id));  // 创建 ashmem fd 存储像素的 bitmap
 #else
     return Bitmap::allocateHeapBitmap(size, info, rowBytes);
 #endif
@@ -198,7 +198,7 @@ sk_sp<Bitmap> Bitmap::allocateAshmemBitmap(size_t size, const SkImageInfo& info,
 
 sk_sp<Bitmap> Bitmap::allocateHardwareBitmap(const SkBitmap& bitmap) {
 #ifdef __ANDROID__  // Layoutlib does not support hardware acceleration
-    return uirenderer::HardwareBitmapUploader::allocateHardwareBitmap(bitmap);
+    return uirenderer::HardwareBitmapUploader::allocateHardwareBitmap(bitmap);  // allocateHardwareBitmap 会创建一个 hardwareBuffer，再 wrap bitmap
 #else
     return Bitmap::allocateHeapBitmap(bitmap.info());
 #endif
@@ -208,6 +208,7 @@ sk_sp<Bitmap> Bitmap::allocateHeapBitmap(SkBitmap* bitmap) {
     return allocateBitmap(bitmap, &Bitmap::allocateHeapBitmap);
 }
 
+// allocateHeapBitmap 分配 HeapBitmap
 sk_sp<Bitmap> Bitmap::allocateHeapBitmap(const SkImageInfo& info) {
     size_t size;
     if (!computeAllocationSize(info.minRowBytes(), info.height(), &size)) {
@@ -232,7 +233,7 @@ sk_sp<Bitmap> Bitmap::createFrom(const SkImageInfo& info, SkPixelRef& pixelRef) 
 
 #ifdef __ANDROID__ // Layoutlib does not support hardware acceleration
 sk_sp<Bitmap> Bitmap::createFrom(AHardwareBuffer* hardwareBuffer, sk_sp<SkColorSpace> colorSpace,
-                                 BitmapPalette palette) {
+                                 BitmapPalette palette) {  // 从一个 HardwareBuffer 以及一个 colorspace 构造 Bitmap
     AHardwareBuffer_Desc bufferDesc;
     AHardwareBuffer_describe(hardwareBuffer, &bufferDesc);
     SkImageInfo info = uirenderer::BufferDescriptionToImageInfo(bufferDesc, colorSpace);
@@ -278,7 +279,7 @@ sk_sp<Bitmap> Bitmap::createFrom(const SkImageInfo& info, size_t rowBytes, int f
         }
     }
 
-    sk_sp<Bitmap> bitmap(new Bitmap(addr, fd, size, info, rowBytes));
+    sk_sp<Bitmap> bitmap(new Bitmap(addr, fd, size, info, rowBytes));  // 根据地址创建 Bitmap
     if (readOnly) {
         bitmap->setImmutable();
     }
@@ -313,7 +314,7 @@ Bitmap::Bitmap(void* address, size_t size, const SkImageInfo& info, size_t rowBy
         , mInfo(validateAlpha(info))
         , mPixelStorageType(PixelStorageType::Heap)
         , mId(getId(mPixelStorageType)) {
-    mPixelStorage.heap.address = address;
+    mPixelStorage.heap.address = address;  // pixelStorage heap.address 后端存储方式
     mPixelStorage.heap.size = size;
     traceBitmapCreate();
 }
@@ -324,7 +325,7 @@ Bitmap::Bitmap(SkPixelRef& pixelRef, const SkImageInfo& info)
         , mPixelStorageType(PixelStorageType::WrappedPixelRef)
         , mId(getId(mPixelStorageType)) {
     pixelRef.ref();
-    mPixelStorage.wrapped.pixelRef = &pixelRef;
+    mPixelStorage.wrapped.pixelRef = &pixelRef;  // pixelRef 后端像素存储方式
     traceBitmapCreate();
 }
 
@@ -334,7 +335,7 @@ Bitmap::Bitmap(void* address, int fd, size_t mappedSize, const SkImageInfo& info
         , mInfo(validateAlpha(info))
         , mPixelStorageType(PixelStorageType::Ashmem)
         , mId(id != INVALID_BITMAP_ID ? id : getId(mPixelStorageType)) {
-    mPixelStorage.ashmem.address = address;
+    mPixelStorage.ashmem.address = address;  // pixelStorage ashmem address 后端像素存放方式
     mPixelStorage.ashmem.fd = fd;
     mPixelStorage.ashmem.size = mappedSize;
     traceBitmapCreate();
@@ -349,7 +350,7 @@ Bitmap::Bitmap(AHardwareBuffer* buffer, const SkImageInfo& info, size_t rowBytes
         , mPalette(palette)
         , mPaletteGenerationId(getGenerationID())
         , mId(getId(mPixelStorageType)) {
-    mPixelStorage.hardware.buffer = buffer;
+    mPixelStorage.hardware.buffer = buffer;  // hardwrea buffer 后端存储方式
     mPixelStorage.hardware.size = AHardwareBuffer_getAllocationSize(buffer);
     AHardwareBuffer_acquire(buffer);
     setImmutable();  // HW bitmaps are always immutable
@@ -457,6 +458,7 @@ AHardwareBuffer* Bitmap::hardwareBuffer() {
 }
 #endif
 
+// 从 huwi Bitmap makeImage 构造一个 SkImage
 sk_sp<SkImage> Bitmap::makeImage() {
     sk_sp<SkImage> image = mImage;
     if (!image) {
@@ -505,7 +507,7 @@ private:
     float mTotal = 0.0f;
     int mCount = 0;
 };
-
+// 计算 Bitmao Palette 调色板
 BitmapPalette Bitmap::computePalette(const SkImageInfo& info, const void* addr, size_t rowBytes) {
     ATRACE_CALL();
 
@@ -559,7 +561,7 @@ BitmapPalette Bitmap::computePalette(const SkImageInfo& info, const void* addr, 
     }
     return BitmapPalette::Unknown;
 }
-
+// Bitmap compress 压缩存储为 jpg png webp 格式
 bool Bitmap::compress(JavaCompressFormat format, int32_t quality, SkWStream* stream) {
 #ifdef __ANDROID__  // TODO: This isn't built for host for some reason?
     if (hasGainmap() && format == JavaCompressFormat::Jpeg) {
@@ -623,6 +625,7 @@ bool Bitmap::compress(const SkBitmap& bitmap, JavaCompressFormat format,
     }
 }
 
+// 获取 Gainmap 信息
 sp<uirenderer::Gainmap> Bitmap::gainmap() const {
     LOG_ALWAYS_FATAL_IF(!hasGainmap(), "Bitmap doesn't have a gainmap");
     return mGainmap;
