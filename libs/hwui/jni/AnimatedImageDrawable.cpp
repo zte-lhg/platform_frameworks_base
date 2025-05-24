@@ -128,7 +128,7 @@ static jlong AnimatedImageDrawable_nGetNativeFinalizer(JNIEnv* /*env*/, jobject 
 
 // Java's FINISHED relies on this being -1
 static_assert(SkAnimatedImage::kFinished == -1);
-
+// AnimatedImageDrawable 绘制函数
 static jlong AnimatedImageDrawable_nDraw(JNIEnv* env, jobject /*clazz*/, jlong nativePtr,
                                          jlong canvasPtr) {
     auto* drawable = reinterpret_cast<AnimatedImageDrawable*>(nativePtr);
