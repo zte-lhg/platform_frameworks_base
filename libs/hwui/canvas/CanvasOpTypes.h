@@ -20,6 +20,7 @@
 
 namespace android::uirenderer {
 
+// canvasOpType 操作符
 enum class CanvasOpType : int8_t {
     // State ops
     // TODO: Eliminate the end ops by having the start include the end-at position
