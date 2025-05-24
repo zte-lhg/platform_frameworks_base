@@ -35,12 +35,12 @@
 class SkWStream;
 
 namespace android {
-
+// 四种 Pixel 存储方式
 enum class PixelStorageType {
-    WrappedPixelRef = 0,
-    Heap = 1,
-    Ashmem = 2,
-    Hardware = 3,
+    WrappedPixelRef = 0, // wrappedPixelRef
+    Heap = 1,  // Heap
+    Ashmem = 2,  // ashmem
+    Hardware = 3,  // hardware 硬件
 };
 
 // TODO: Find a better home for this. It's here because hwui/Bitmap is exported and CanvasTransform
@@ -73,11 +73,11 @@ public:
      * The factories that accept const SkBitmap& as a param will copy the contents of the
      * provided bitmap into the newly allocated buffer.
      */
-    static sk_sp<Bitmap> allocateAshmemBitmap(SkBitmap* bitmap);
-    static sk_sp<Bitmap> allocateHardwareBitmap(const SkBitmap& bitmap);
-    static sk_sp<Bitmap> allocateHeapBitmap(SkBitmap* bitmap);
-    static sk_sp<Bitmap> allocateHeapBitmap(const SkImageInfo& info);
-    static sk_sp<Bitmap> allocateHeapBitmap(size_t size, const SkImageInfo& i, size_t rowBytes);
+    static sk_sp<Bitmap> allocateAshmemBitmap(SkBitmap* bitmap);   // 创建 ashmenBitmap
+    static sk_sp<Bitmap> allocateHardwareBitmap(const SkBitmap& bitmap);   // 创建 hardwareBitmap
+    static sk_sp<Bitmap> allocateHeapBitmap(SkBitmap* bitmap);   // 创建 堆内存像素 bitmap
+    static sk_sp<Bitmap> allocateHeapBitmap(const SkImageInfo& info);   // 根据 skimageInfo  创建堆内存 bitmap
+    static sk_sp<Bitmap> allocateHeapBitmap(size_t size, const SkImageInfo& i, size_t rowBytes);  // 根据 skImageInfo 与 rowBytes 创建 heapBitmap
 
     static std::string getAshmemId(const char* tag, uint64_t bitmapId,
                                    int width, int height, size_t size);
@@ -224,14 +224,14 @@ private:
             void* address;
             int fd;
             size_t size;
-        } ashmem;
+        } ashmem;  // ashmem 包含一个 address 已经一个 fd
         struct {
-            void* address;
+            void* address;  // heap 包含一个 address 已经一个 size
             size_t size;
         } heap;
 #ifdef __ANDROID__ // Layoutlib does not support hardware acceleration
         struct {
-            AHardwareBuffer* buffer;
+            AHardwareBuffer* buffer;   // 包含一个 AHardwareBuffer 与 一个size
             uint64_t size;
         } hardware;
 #endif
