@@ -190,7 +190,7 @@ void reinitBitmap(JNIEnv* env, jobject javaBitmap, const SkImageInfo& info,
     env->CallVoidMethod(javaBitmap, gBitmap_reinitMethodID,
             info.width(), info.height(), isPremultiplied);
 }
-
+// 创建  Bitmap
 jobject createBitmap(JNIEnv* env, Bitmap* bitmap,
         int bitmapCreateFlags, jbyteArray ninePatchChunk, jobject ninePatchInsets,
         int density) {
@@ -267,7 +267,7 @@ SkImageInfo GraphicsJNI::getBitmapInfo(JNIEnv* env, jobject bitmap, uint32_t* ou
     }
     return localBitmap->info();
 }
-
+// Bitmap 设置 Pixel 像素值
 bool GraphicsJNI::SetPixels(JNIEnv* env, jintArray srcColors, int srcOffset, int srcStride,
         int x, int y, int width, int height, SkBitmap* dstBitmap) {
     const jint* array = env->GetIntArrayElements(srcColors, NULL);
@@ -993,7 +993,7 @@ static jlong Bitmap_getColor(JNIEnv* env, jobject, jlong bitmapHandle,
     bitmap.readPixels(dstInfo, &dst, dstInfo.minRowBytes(), x, y);
     return static_cast<jlong>(dst);
 }
-
+// Bitmap getPixels 获取 Pixels 像素值
 static void Bitmap_getPixels(JNIEnv* env, jobject, jlong bitmapHandle,
         jintArray pixelArray, jint offset, jint stride,
         jint x, jint y, jint width, jint height) {
@@ -1033,7 +1033,7 @@ static void Bitmap_setPixels(JNIEnv* env, jobject, jlong bitmapHandle,
     GraphicsJNI::SetPixels(env, pixelArray, offset, stride,
             x, y, width, height, &bitmap);
 }
-
+// Bitmap 拷贝 Pixels 到 Buffer 当中
 static void Bitmap_copyPixelsToBuffer(JNIEnv* env, jobject,
                                       jlong bitmapHandle, jobject jbuffer) {
     SkBitmap bitmap;
