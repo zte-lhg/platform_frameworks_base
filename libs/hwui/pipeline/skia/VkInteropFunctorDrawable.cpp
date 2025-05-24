@@ -93,7 +93,7 @@ void VkInteropFunctorDrawable::onDraw(SkCanvas* canvas) {
                          AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
                          AHARDWAREBUFFER_USAGE_GPU_FRAMEBUFFER,
         };
-
+        // allocateHardwareBuffer 分配 hardwareBuffer
         mFrameBuffer = allocateAHardwareBuffer(desc);
 
         if (!mFrameBuffer) {
@@ -180,7 +180,7 @@ void VkInteropFunctorDrawable::onDraw(SkCanvas* canvas) {
 
     SkPaint paint;
     paint.setBlendMode(SkBlendMode::kSrcOver);
-    canvas->save();
+    canvas->save(); // canvas save displaylist
     // The size of the image matches the size of the canvas. We've used the matrix already, while
     // drawing into the offscreen surface, so we need to reset it here.
     canvas->resetMatrix();
