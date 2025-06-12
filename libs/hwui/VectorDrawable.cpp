@@ -466,6 +466,8 @@ void Tree::drawStaging(Canvas* outCanvas) {
     paint.setFilterBitmap(skp.isFilterBitmap());
     paint.setColorFilter(skp.refColorFilter());
     paint.setAlpha(skp.getAlpha());
+
+    // outCanvas drawBitmap 绘制 bitmap
     outCanvas->drawBitmap(*mStagingCache.bitmap, 0, 0, mStagingCache.bitmap->width(),
                           mStagingCache.bitmap->height(), mStagingProperties.getBounds().left(),
                           mStagingProperties.getBounds().top(),
@@ -512,6 +514,7 @@ void Tree::draw(SkCanvas* canvas, const SkRect& bounds, const SkPaint& inPaint) 
                           sampling, &paint, SkCanvas::kFast_SrcRectConstraint);
 }
 
+// updateBitmapCache 更新 bitmap Cache
 void Tree::updateBitmapCache(Bitmap& bitmap, bool useStagingData) {
     SkBitmap outCache;
     bitmap.getSkBitmap(&outCache);
@@ -533,7 +536,7 @@ void Tree::updateBitmapCache(Bitmap& bitmap, bool useStagingData) {
 bool Tree::allocateBitmapIfNeeded(Cache& cache, int width, int height) {
     if (!canReuseBitmap(cache.bitmap.get(), width, height)) {
         SkImageInfo info = SkImageInfo::MakeN32(width, height, kPremul_SkAlphaType);
-        cache.bitmap = Bitmap::allocateHeapBitmap(info);
+        cache.bitmap = Bitmap::allocateHeapBitmap(info);   // allocateHeapBitmap 分配HeapBitmap 堆内存
         return true;
     }
     return false;
