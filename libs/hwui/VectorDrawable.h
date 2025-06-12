@@ -85,7 +85,8 @@ namespace VectorDrawable {
  * staging properties with render thread properties to reflect the latest animation value.
  *
  */
-
+// VertocDrawables drawn into bitmap caches firs, then the caches are drawn to the given canvas with the root aplha applied, Two cached are maintained for VD, one in UI thread
+the other in Render Thread, A Generation id is used to keep track of changes in the vector drawable tree
 class PropertyChangedListener {
 public:
     PropertyChangedListener(bool* dirty, bool* stagingDirty)
